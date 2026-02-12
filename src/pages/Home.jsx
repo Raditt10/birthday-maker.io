@@ -53,7 +53,7 @@ const Home = () => {
       initial="initial"
       animate="animate"
       exit="exit"
-      className="w-full h-screen overflow-hidden bg-zinc-900"
+      className="w-full min-h-screen overflow-x-hidden bg-zinc-900"
     >
       <MangaLayout 
         sidePanelContent={
