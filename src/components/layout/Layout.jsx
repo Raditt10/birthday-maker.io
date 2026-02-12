@@ -9,11 +9,19 @@ const MangaLayout = ({ children, sidePanelContent }) => {
       </div>
       
       {/* Panel Kanan (Visual/Illustration) */}
-      <div className="relative h-[40vh] md:h-auto md:flex-1 bg-black overflow-hidden order-1 md:order-2 border-b-4 md:border-b-0 border-black">
+      <div className="relative h-[40vh] md:h-auto md:flex-1 bg-black overflow-hidden order-1 md:order-2 border-b-4 md:border-b-0 border-black group">
+        {/* Background Image with Scale Effect */}
         <div 
-          className="absolute inset-0 opacity-60 bg-cover bg-center grayscale contrast-125 mix-blend-screen"
+          className="absolute inset-0 opacity-60 bg-cover bg-center grayscale contrast-125 mix-blend-screen transition-transform duration-1000 group-hover:scale-105"
           style={{ backgroundImage: "url('/comicpanel2.webp')" }}
-        ></div>
+        />
+        
+        {/* Professional Gradients & Overlays */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-90" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-transparent to-black/80 opacity-60" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-transparent via-black/20 to-black opacity-80" />
+
+        {/* Content */}
         <div className="relative z-10 h-full w-full flex items-center justify-center p-8">
            {sidePanelContent}
         </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { QRCodeSVG } from 'qrcode.react';
 
@@ -83,11 +83,24 @@ const PlaceholderShare = ({ onClick }) => (
 );
 
 const CountdownMission = () => {
-  const { name, day, month } = useParams();
+  const { name, day, month, character } = useParams();
   const [showShare, setShowShare] = useState(false);
   const [timeLeft, setTimeLeft] = useState(null);
   const [isBirthday, setIsBirthday] = useState(false);
   const [bgPhase, setBgPhase] = useState('calm');
+
+  // Character Config
+  const CHARACTER_CONFIG = {
+    gojo: { img: '/avatar/Gojo_satoru.webp', filter: 'grayscale(100%) contrast(110%) brightness(0.8)', name: 'AGENT GOJO' },
+    leon: { img: '/avatar/Leon_scott_keneddy.webp', filter: 'grayscale(100%) contrast(120%) brightness(0.7)', name: 'AGENT LEON' },
+    levi: { img: '/avatar/levi_ackermen.webp', filter: 'grayscale(100%) contrast(120%) brightness(0.8)', name: 'CAPTAIN LEVI' },
+    // Fallbacks for old links
+    vanguard: { img: '/comicpanel.webp', filter: 'grayscale(100%) sepia(100%) hue-rotate(90deg)', name: 'AGENT VANGUARD' },
+    chrono: { img: '/comicpanel.webp', filter: 'grayscale(100%)', name: 'AGENT CHRONO' },
+    neon: { img: '/comicpanel2.webp', filter: 'grayscale(100%) contrast(120%)', name: 'AGENT NEON' }
+  };
+  // Fallback to 'gojo' if character not found or old link uses 'chrono'
+  const activeChar = CHARACTER_CONFIG[character] || CHARACTER_CONFIG['gojo'];
 
   const getPhaseData = (days) => {
     if (days === 0 && !isBirthday) return { phase: 'critical', dialog: "Tinggal hitungan jam! Semuanya siap di posisi?!" };
@@ -133,8 +146,13 @@ const CountdownMission = () => {
 
   if (!timeLeft) return <div className="h-screen bg-black flex items-center justify-center text-white font-mono animate-pulse">SYNCHRONIZING...</div>;
 
+  const location = useLocation();
+  const isFromLoading = location.state?.fromLoading;
+
   const comicVariants = {
-    initial: { x: '50%', opacity: 0, scale: 0.9 },
+    initial: isFromLoading 
+      ? { opacity: 1, x: '0%', scale: 1 } 
+      : { x: '50%', opacity: 0, scale: 0.9 },
     animate: { 
       x: '0%', 
       opacity: 1, 
@@ -170,10 +188,13 @@ const CountdownMission = () => {
             <div 
               className="absolute inset-0 bg-cover bg-center z-0 transition-all duration-1000 scale-105"
               style={{ 
-                backgroundImage: "url('/comicpanel.webp')",
-                filter: bgPhaseColors[bgPhase] || 'grayscale(100%)'
+                backgroundImage: `url('${activeChar.img}')`,
+                filter: `${bgPhaseColors[bgPhase]} ${character === 'vanguard' ? 'hue-rotate(90deg)' : ''}`
               }}
-            />
+            >
+                <div className="absolute inset-0 mix-blend-overlay bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 mix-blend-color-dodge animate-pulse"></div>
+            </div>
             
             <div className="absolute inset-0 z-[1] opacity-25 pointer-events-none"
               style={{
@@ -209,7 +230,7 @@ const CountdownMission = () => {
             </Link>
             
             <div className="overflow-hidden">
-              <div className="font-mono text-[10px] font-bold tracking-[0.3em] bg-black text-white inline-block px-2 py-0.5 mb-2">TARGET_ID</div>
+              <div className="font-mono text-[10px] font-bold tracking-[0.3em] bg-black text-white inline-block px-2 py-0.5 mb-2">TARGET_NAME</div>
               <h2 className="font-['Bangers'] text-5xl md:text-7xl leading-none text-black uppercase break-all">
                 {name}
               </h2>
@@ -218,7 +239,9 @@ const CountdownMission = () => {
             <div className="w-full h-2 bg-black"></div>
 
             <div className="bg-gray-50 border-l-8 border-black p-4 md:p-6 shadow-inner">
-              <div className="font-mono text-[10px] font-bold tracking-widest text-gray-400 mb-2 underline">COMMS_LOG</div>
+              <div className="font-mono text-[10px] font-bold tracking-widest text-gray-400 mb-2 underline uppercase">
+                 INCOMING_MSG // {activeChar.name}
+              </div>
               <p className="italic font-black text-lg md:text-2xl leading-tight text-black">
                  "{phaseData.dialog}"
               </p>

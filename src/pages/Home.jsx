@@ -1,16 +1,36 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MangaLayout from '../components/layout/Layout';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import LoadingScreen from '../components/ui/LoadingScreen';
+import SearchBar from '../components/ui/SearchBar';
+import Footer from '../components/ui/Footer';
 
 const Home = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({ name: '', day: '', month: '' });
+  const [formData, setFormData] = useState({ name: '', day: '', month: '', character: 'gojo' });
+  const [isLoading, setIsLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const CHARACTERS = [
+    { id: 'gojo', name: 'GOJO SATORU', desc: 'Special Grade', img: '/avatar/Gojo_satoru.webp' },
+    { id: 'leon', name: 'LEON SCOTT KENNEDY', desc: 'Survival Expert', img: '/avatar/Leon_scott_keneddy.webp' },
+    { id: 'levi', name: 'LEVI ACKERMEN', desc: 'Humanity\'s Strongest', img: '/avatar/levi_ackermen.webp' }
+  ];
+
+  const filteredCharacters = CHARACTERS.filter(char => 
+    char.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    char.desc.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if(formData.name && formData.day && formData.month) {
-      navigate(`/mission/${formData.name}/${formData.day}/${formData.month}`);
+      setIsLoading(true);
+      // Simulate data processing delay
+      setTimeout(() => {
+        navigate(`/mission/${formData.name}/${formData.day}/${formData.month}/${formData.character}`, { state: { fromLoading: true } });
+      }, 2000);
     }
   };
 
@@ -23,10 +43,9 @@ const Home = () => {
       transition: { duration: 0.6, ease: [0.4, 0.0, 0.2, 1] } 
     },
     exit: { 
-      x: '-50%', 
-      opacity: 0, 
-      scale: 0.95,
-      transition: { duration: 0.4, ease: [0.4, 0.0, 1, 1] } 
+      x: isLoading ? '0%' : '-50%', 
+      opacity: isLoading ? 1 : 0, 
+      transition: { duration: isLoading ? 0 : 0.4, ease: [0.4, 0.0, 1, 1] } 
     }
   };
 
@@ -53,7 +72,7 @@ const Home = () => {
       initial="initial"
       animate="animate"
       exit="exit"
-      className="w-full min-h-screen overflow-x-hidden bg-zinc-900"
+      className="w-full min-h-screen bg-zinc-900"
     >
       <MangaLayout 
         sidePanelContent={
@@ -67,7 +86,7 @@ const Home = () => {
                 BIRTHDAY<br/>MAKER
               </h1>
               <p className="font-mono bg-yellow-400 text-black font-bold text-xs md:text-lg inline-block px-4 py-1 transform skew-x-[-10deg] border-2 border-black shadow-[4px_4px_0_#000]">
-                v2.0 // INITIALIZE SEQUENCE
+                v0.1.0 // INITIALIZE SEQUENCE
               </p>
             </motion.div>
           </div>
@@ -98,22 +117,22 @@ const Home = () => {
         <div className="absolute top-[-10%] right-20 w-[2px] h-[120%] bg-black/10 -rotate-6 pointer-events-none -z-10" />
 
         <motion.div variants={itemVariants} className="mb-10 border-l-[12px] border-black pl-6 relative">
-           <span className="absolute -top-6 -left-3 text-[10px] font-mono font-bold bg-black text-white px-2 py-0.5">SYS.BOOT.READY</span>
+           <span className="absolute -top-6 -left-3 text-[10px] font-mono font-bold bg-black text-white px-2 py-0.5">Make Your Own Version.</span>
            <h2 className="font-['Bangers'] text-5xl md:text-8xl mb-2 leading-[0.85] text-black drop-shadow-[2px_2px_0_rgba(0,0,0,0.1)]">
              MISSION<br/>INITIATION
            </h2>
            <p className="font-mono text-xs md:text-sm bg-black text-white inline-block px-3 py-1 transform -skew-x-12 shadow-[4px_4px_0_rgba(0,0,0,0.2)]">
-             // ENTER TARGET DATA //
+             // Congratulate your lover Fiction Character! //
            </p>
         </motion.div>
 
         <form onSubmit={handleSubmit} className="space-y-6 md:space-y-8">
           <motion.div variants={itemVariants} className="group relative">
-            <label className="block font-['Bangers'] text-xl md:text-2xl mb-1 ml-1">TARGET IDENTITY</label>
+            <label className="block font-['Bangers'] text-xl md:text-2xl mb-1 ml-1">TARGET NAME</label>
             <div className="relative">
               <input 
                 type="text" 
-                placeholder="NAME CODYE..."
+                placeholder="Ex: Abdul Hussain"
                 className="w-full bg-gray-50 border-4 border-black p-4 font-bold text-lg md:text-2xl focus:shadow-[8px_8px_0px_#000] focus:bg-white focus:-translate-y-1 focus:-translate-x-1 focus:outline-none transition-all placeholder:text-gray-300 rounded-none"
                 onChange={e => setFormData({...formData, name: e.target.value})}
                 required
@@ -143,6 +162,69 @@ const Home = () => {
             </div>
           </motion.div>
 
+          <motion.div variants={itemVariants} className="group">
+            <label className="block font-['Bangers'] text-xl md:text-2xl mb-2 ml-1">SELECT CHARACTER</label>
+            
+            <SearchBar 
+              value={searchQuery} 
+              onChange={(e) => setSearchQuery(e.target.value)} 
+            />
+            
+            <AnimatePresence>
+            {searchQuery && filteredCharacters.length > 0 && (
+                <motion.div 
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="mb-2 pl-1"
+                >
+                    <span className="bg-yellow-400 text-black border-2 border-black text-[10px] sm:text-xs font-mono font-bold px-2 py-1 inline-block shadow-[2px_2px_0_#000]">
+                        {'>>'} SYSTEM MATCH: MAYBE THIS IS WHO YOU MEANT?
+                    </span>
+                </motion.div>
+            )}
+            {searchQuery && filteredCharacters.length === 0 && (
+                <motion.div 
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    className="mb-2 pl-1 font-mono text-xs text-red-600 font-black animate-pulse bg-black/10 p-1"
+                >
+                    {'>>'} ERROR: 404 AGENT NOT FOUND
+                </motion.div>
+            )}
+            </AnimatePresence>
+
+            <div className="grid grid-cols-3 gap-2 md:gap-4">
+              {filteredCharacters.map((char) => (
+                <div 
+                  key={char.id}
+                  onClick={() => setFormData({...formData, character: char.id})}
+                  className={`
+                    cursor-pointer border-4 p-2 relative overflow-hidden transition-all group/char
+                    ${formData.character === char.id ? 'border-black bg-black text-white transform -translate-y-1 shadow-[4px_4px_0_#000]' : 'border-gray-200 bg-gray-50 text-gray-400 hover:border-black hover:text-black'}
+                  `}
+                >
+                  {/* Image or Color Block */}
+                  {char.img ? (
+                    <div 
+                      className="w-full h-12 md:h-16 mb-2 bg-cover bg-center grayscale group-hover/char:grayscale-0 transition-all"
+                      style={{ backgroundImage: `url('${char.img}')` }}
+                    />
+                  ) : (
+                    <div className={`w-full h-12 md:h-16 mb-2 ${char.color} opacity-80 group-hover/char:opacity-100 transition-opacity`} />
+                  )}
+                  
+                  <div className="font-['Bangers'] text-lg md:text-xl leading-none">{char.name}</div>
+                  <div className="font-mono text-[8px] md:text-[10px] uppercase">{char.desc}</div>
+                  
+                  {formData.character === char.id && (
+                    <div className="absolute top-1 right-1 text-yellow-400 text-xs font-bold">★</div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </motion.div>
+
           <motion.button 
             variants={itemVariants}
             whileHover={{ scale: 1.02, backgroundColor: "#000", color: "#fff" }}
@@ -158,13 +240,17 @@ const Home = () => {
           </motion.button>
         </form>
 
-        <motion.div variants={itemVariants} className="mt-8 flex justify-between font-mono text-[10px] text-gray-400">
-           <span>SECURE: ENCRYPTED-256</span>
-           <span>STATUS: STANDBY</span>
+        <motion.div variants={itemVariants} className="mt-8 pb-8 text-center opacity-30">
+             <p className="font-mono text-[10px]">/// SECURE FORM v0.1.0 ///</p>
         </motion.div>
-
+        
+        <AnimatePresence>
+            {isLoading && <LoadingScreen />}
+        </AnimatePresence>
       </motion.div>
      </MangaLayout>
+     
+     <Footer />
     </motion.div>
   );
 };

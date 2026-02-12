@@ -12,6 +12,7 @@ function App() {
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<Home />} />
         <Route path="/mission/:name/:day/:month" element={<CountdownMission />} />
+        <Route path="/mission/:name/:day/:month/:character" element={<CountdownMission />} />
       </Routes>
     </AnimatePresence>
   );
