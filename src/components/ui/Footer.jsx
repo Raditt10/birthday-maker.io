@@ -66,7 +66,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="pt-4 flex justify-center items-center font-mono text-[10px] text-zinc-600">
            <div className="text-center">
-              © 2026 BIRTHDAY.IO CORP. ALL RIGHTS RESERVED.
+              © 2026 Kanjirouu. ALL RIGHTS RESERVED.
            </div>
         </div>
       </div>

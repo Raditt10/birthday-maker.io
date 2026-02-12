@@ -145,7 +145,7 @@ const Home = () => {
             <div className="group">
               <label className="block font-['Bangers'] text-xl md:text-2xl mb-1 ml-1">DAY (DD)</label>
               <input 
-                type="number" min="1" max="31" placeholder="00"
+                type="number" min="1" max="31" placeholder="DD"
                 className="w-full bg-gray-50 border-4 border-black p-4 font-bold text-center text-xl md:text-2xl focus:shadow-[6px_6px_0px_#000] focus:bg-white focus:-translate-y-1 focus:outline-none transition-all rounded-none"
                 onChange={e => setFormData({...formData, day: e.target.value})}
                 required
@@ -154,7 +154,7 @@ const Home = () => {
             <div className="group">
               <label className="block font-['Bangers'] text-xl md:text-2xl mb-1 ml-1">MONTH (MM)</label>
               <input 
-                type="number" min="1" max="12" placeholder="00"
+                type="number" min="1" max="12" placeholder="MM"
                 className="w-full bg-gray-50 border-4 border-black p-4 font-bold text-center text-xl md:text-2xl focus:shadow-[6px_6px_0px_#000] focus:bg-white focus:-translate-y-1 focus:outline-none transition-all rounded-none"
                 onChange={e => setFormData({...formData, month: e.target.value})}
                 required

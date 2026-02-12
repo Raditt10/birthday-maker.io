@@ -100,10 +100,10 @@ const LoadingScreen = () => {
         />
 
         {/* --- MAIN CONTENT --- */}
-        <div className="relative z-10 flex flex-col items-center w-full max-w-md px-6">
+        <div className="relative z-10 flex flex-col items-center w-full max-w-2xl px-6">
             
             {/* CANVAS CONTAINER WITH SCANLINE */}
-            <div className="relative w-full aspect-video flex items-center justify-center mb-8">
+            <div className="relative w-full aspect-video flex items-center justify-center">
                 {/* The Character/Video */}
                 <canvas 
                     ref={canvasRef}
@@ -115,7 +115,7 @@ const LoadingScreen = () => {
             </div>
 
             {/* TEXT & LOADING BAR */}
-            <div className="w-full space-y-2">
+            <div className="w-full max-w-md space-y-2 mt-24">
                 <div className="flex justify-between items-end">
                     <h2 className="font-['Bangers'] text-4xl text-white tracking-wider animate-pulse">
                         GENERATE...
