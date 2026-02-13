@@ -1,35 +1,47 @@
 import React, { useEffect, useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
-const LoadingScreen = ({ text = "GENERATE..." }) => {
+const LoadingScreen = ({ text = "INITIALIZING..." }) => {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [logIndex, setLogIndex] = useState(0);
 
-  // --- 1. CHROMA KEY LOGIC (Tetap dipertahankan) ---
+  // Fake System Logs for atmosphere
+  const logs = [
+    "CONNECTING_TO_SERVER...",
+    "BYPASSING_FIREWALL...",
+    "DECRYPTING_PACKETS...",
+    "SYNCING_MISSION_DATA...",
+    "LOADING_ASSETS...",
+    "RENDERING_TARGET...",
+    "ESTABLISHING_SECURE_LINE...",
+    "ACCESS_GRANTED."
+  ];
+
+  // --- 1. CHROMA KEY LOGIC ---
   useEffect(() => {
     const video = videoRef.current;
     const canvas = canvasRef.current;
-    if (!video || !canvas) return;
-
-    const ctx = canvas.getContext('2d', { willReadFrequently: true });
     let animationFrameId;
 
     const processFrame = () => {
-      if (video.paused || video.ended) {
+      if (!video || !canvas || video.paused || video.ended) {
          animationFrameId = requestAnimationFrame(processFrame);
          return;
       }
 
-      // Sync size
-      if (canvas.width !== video.videoWidth) {
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+      // Sync size only if changed
+      if (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight) {
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
       }
 
-      // Draw & Chroma Key
+      // Draw original frame
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
       
       try {
@@ -37,43 +49,57 @@ const LoadingScreen = ({ text = "GENERATE..." }) => {
         const data = frame.data;
         const len = data.length;
 
-        // Optimization: Loop with slightly less checks if possible
+        // Chroma Key Logic (Green Screen)
+        // Optimization: Loop increment by 4
         for (let i = 0; i < len; i += 4) {
           const r = data[i];
           const g = data[i + 1];
           const b = data[i + 2];
 
-          // Simple Green Screen Logic
-          if (g > 100 && g > r * 1.4 && g > b * 1.4) {
-            data[i + 3] = 0; // Alpha 0
+          // Threshold adjustment for better cutout
+          if (g > 90 && g > r * 1.4 && g > b * 1.4) {
+            data[i + 3] = 0; // Set Alpha to 0
           }
         }
         ctx.putImageData(frame, 0, 0);
       } catch (e) {
-        // Silent catch
+        // Cross-origin issues or context lost
+        console.warn("Canvas processing error", e);
       }
 
       animationFrameId = requestAnimationFrame(processFrame);
     };
 
-    video.addEventListener('play', processFrame);
+    if (video) {
+        video.addEventListener('play', processFrame);
+    }
+    
     return () => {
-        cancelAnimationFrame(animationFrameId);
-        video.removeEventListener('play', processFrame);
+      cancelAnimationFrame(animationFrameId);
+      if(video) video.removeEventListener('play', processFrame);
     };
   }, []);
 
-  // --- 2. PROGRESS SIMULATION ---
+  // --- 2. PROGRESS & LOG SIMULATION ---
   useEffect(() => {
     const interval = setInterval(() => {
-      setProgress((prev) => (prev >= 100 ? 100 : prev + Math.random() * 5));
-    }, 150);
+      setProgress((prev) => {
+        if (prev >= 100) return 100;
+        // Random increment speed
+        return prev + Math.random() * 8; 
+      });
+    }, 200);
+
+    const logInterval = setInterval(() => {
+        setLogIndex(prev => (prev + 1) % logs.length);
+    }, 400);
     
-    // Ensure canvas shows after 1 second even if video hasn't loaded
-    const timer = setTimeout(() => setIsVideoLoaded(true), 1000);
+    // Fail-safe: show content after 1.5s even if video fails
+    const timer = setTimeout(() => setIsVideoLoaded(true), 1500);
     
     return () => {
       clearInterval(interval);
+      clearInterval(logInterval);
       clearTimeout(timer);
     };
   }, []);
@@ -82,77 +108,89 @@ const LoadingScreen = ({ text = "GENERATE..." }) => {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[9999] bg-black flex flex-col items-center justify-center overflow-hidden font-mono"
+      exit={{ opacity: 0, transition: { duration: 0.5 } }}
+      className="fixed inset-0 z-[9999] bg-neutral-900 flex flex-col items-center justify-center overflow-hidden font-mono cursor-wait"
     >
-        {/* --- BACKGROUND EFFECTS --- */}
+        {/* --- BACKGROUND LAYERS --- */}
+        {/* Grid Pattern */}
+        <div className="absolute inset-0 opacity-10" 
+             style={{ backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)', backgroundSize: '40px 40px' }}>
+        </div>
         
-        {/* Vignette (Gelap di pinggir) */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle,transparent_40%,#000_100%)] pointer-events-none" />
+        {/* Radial Vignette */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle,transparent_20%,#000_100%)] pointer-events-none" />
+
+        {/* Scrolling Code Background (Decorative) */}
+        <div className="absolute top-0 left-0 p-4 opacity-20 text-[10px] text-green-500 font-mono hidden md:block select-none pointer-events-none">
+            {logs.map((log, i) => (
+                <div key={i} className={i === logIndex ? "text-white font-bold" : ""}>
+                    {`> SYS_PROCESS_${i+102}: ${log}`}
+                </div>
+            ))}
+        </div>
+
 
         {/* --- HIDDEN VIDEO SOURCE --- */}
+        {/* Pastikan file loading.mp4 ada di folder public Anda */}
         <video 
             ref={videoRef}
             src="/loading.mp4" 
             autoPlay loop muted playsInline
+            crossOrigin="anonymous"
             onLoadedData={() => setIsVideoLoaded(true)}
             onPlay={() => setIsVideoLoaded(true)}
-            onCanPlay={() => setIsVideoLoaded(true)}
+            onError={() => setIsVideoLoaded(true)} // Handle error gracefully
             className="absolute opacity-0 pointer-events-none w-1 h-1"
         />
 
-        {/* --- MAIN CONTENT --- */}
-        <div className="relative z-10 flex flex-col items-center w-full max-w-md px-6">
+        {/* --- MAIN CONTENT CONTAINER --- */}
+        <div className="relative z-10 flex flex-col items-center w-full max-w-lg px-8">
             
-            {/* CANVAS CONTAINER WITH SCANLINE */}
-            <div className="relative w-full aspect-video flex items-center justify-center mb-8">
-                {/* The Character/Video */}
+            {/* CANVAS DISPLAY */}
+            <div className="relative w-48 h-48 md:w-64 md:h-64 flex items-center justify-center mb-6">
                 <canvas 
                     ref={canvasRef}
-                    className={`w-full h-full object-contain transition-opacity duration-500 ${isVideoLoaded ? 'opacity-100' : 'opacity-50'}`}
+                    className={`w-full h-full object-contain transition-all duration-700 drop-shadow-[0_0_15px_rgba(255,255,0,0.3)] ${isVideoLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-90'}`}
                 />
                 
-                {/* Loading Indicator when Video Not Ready */}
+                {/* Fallback Loader if video hasn't loaded yet or failed */}
                 {!isVideoLoaded && (
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-center">
-                      <div className="inline-block w-8 h-8 border-2 border-white border-t-yellow-400 rounded-full animate-spin"></div>
-                      <p className="text-white text-xs mt-2">Loading Animation...</p>
-                    </div>
+                    <div className="w-16 h-16 border-4 border-t-yellow-400 border-r-transparent border-b-white border-l-transparent rounded-full animate-spin"></div>
                   </div>
                 )}
-                
-                {/* Scanline Effect (Garis berjalan turun) */}
-                <div className="absolute inset-0 h-[20%] w-full animate-scan pointer-events-none" />
             </div>
 
-            {/* TEXT & LOADING BAR */}
-            <div className="w-full space-y-2">
-                <div className="flex justify-between items-end">
-                    <h2 className="font-['Bangers'] text-4xl text-white tracking-wider animate-pulse uppercase">
-                        {text}
+            {/* TEXT & BAR */}
+            <div className="w-full space-y-3">
+                <div className="flex justify-between items-end border-b-2 border-white/20 pb-1">
+                    <h2 className="font-['Bangers'] text-4xl md:text-5xl text-white tracking-widest leading-none drop-shadow-[2px_2px_0_#000]">
+                      <span className="animate-pulse">{text}</span>
                     </h2>
-                    <span className="text-xs text-yellow-400 font-bold mb-1">
-                        {Math.floor(progress)}%
+                    <span className="font-mono text-xl text-yellow-400 font-bold">
+                        {Math.floor(progress)}<span className="text-xs align-top">%</span>
                     </span>
                 </div>
 
-                {/* Progress Bar Container */}
-                <div className="w-full h-4 border-2 border-white bg-gray-900 relative overflow-hidden shadow-[4px_4px_0_#000]">
-                    {/* Animated Fill */}
+                {/* Progress Bar */}
+                <div className="w-full h-6 border-4 border-black bg-gray-800 relative shadow-[4px_4px_0_rgba(0,0,0,0.5)]">
                     <motion.div 
-                        className="h-full bg-white relative"
+                        className="h-full bg-yellow-400 relative overflow-hidden"
                         initial={{ width: 0 }}
                         animate={{ width: `${progress}%` }}
+                        transition={{ ease: "linear" }}
                     >
-                        {/* Striped Texture on Bar */}
-                        <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'repeating-linear-gradient(45deg, #000, #000 5px, transparent 5px, transparent 10px)' }} />
+                        {/* Striped Texture */}
+                        <div className="absolute inset-0 opacity-30" 
+                             style={{ backgroundImage: 'repeating-linear-gradient(-45deg, #000, #000 5px, transparent 5px, transparent 10px)' }} 
+                        />
                     </motion.div>
                 </div>
 
-                {/* Random Tech Text */}
-                <div className="flex justify-between text-[10px] text-gray-500 uppercase mt-2">
-                    <span className="animate-bounce">Encrypting...</span>
+                {/* Status Log Footer */}
+                <div className="flex justify-between text-[10px] md:text-xs font-bold font-mono text-gray-400 uppercase tracking-widest mt-2">
+                    <span>Mem: {Math.floor(progress * 12.4)} MB</span>
+                    <span className="text-yellow-400 animate-pulse">{logs[logIndex]}</span>
                 </div>
             </div>
         </div>
