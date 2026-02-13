@@ -28,7 +28,7 @@ const Footer = () => {
           <div className="space-y-4">
             <div>
               <h3 className="font-['Bangers'] text-3xl md:text-4xl tracking-wide text-white drop-shadow-md">
-                BIRTHDAY MAKER.IO
+                HOSHIDAY.IO
               </h3>
               <p className="font-mono text-xs text-zinc-500 tracking-wider">
                 V0.1.0 // DEMO RELEASE

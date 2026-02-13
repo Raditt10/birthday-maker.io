@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { QRCodeSVG } from 'qrcode.react';
+import Footer from '../components/ui/Footer';
 
 // --- SHARE MODAL COMPONENT ---
 const ShareModal = ({ url, onClose }) => {
@@ -336,6 +337,7 @@ const CountdownMission = () => {
   const phaseData = getPhaseData(timeLeft.totalDays);
 
   return (
+    <>
     <motion.div 
       variants={comicVariants}
       initial="initial"
@@ -435,6 +437,9 @@ const CountdownMission = () => {
       </div>
 
     </motion.div>
+
+    <Footer />
+    </>
   );
 };
 
