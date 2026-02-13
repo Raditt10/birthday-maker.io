@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, Link, useLocation } from 'react-router-dom';
+import React, { useState, useEffect, useRef } from 'react';
+import { useParams, Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { QRCodeSVG } from 'qrcode.react';
 import Footer from '../components/ui/Footer';
 import LoadingScreen from '../components/ui/LoadingScreen';
 
-// --- SHARE MODAL COMPONENT ---
+// --- SHARE MODAL COMPONENT (Re-styled) ---
 const ShareModal = ({ url, onClose }) => {
   const [copied, setCopied] = useState(false);
 
@@ -18,56 +18,55 @@ const ShareModal = ({ url, onClose }) => {
   return (
     <motion.div 
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+      className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md"
       onClick={onClose}
     >
       <motion.div 
-        initial={{ scale: 0.9, rotate: -2 }} animate={{ scale: 1, rotate: 0 }}
-        className="bg-white border-4 border-black p-6 md:p-8 max-w-sm w-full shadow-[8px_8px_0_rgba(255,255,255,0.2)]"
+        initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }}
+        className="bg-white border-4 border-black p-6 w-full max-w-sm shadow-[12px_12px_0_#fff]"
         onClick={e => e.stopPropagation()}
       >
-        <div className="flex justify-between items-center mb-4 border-b-2 border-black pb-2">
-          <h2 className="font-['Bangers'] text-3xl">TOP SECRET DATA</h2>
-          <button onClick={onClose} className="font-mono font-bold text-xl hover:text-red-600">X</button>
+        <div className="flex justify-between items-start mb-6 border-b-4 border-black pb-4">
+          <div>
+            <h2 className="font-['Bangers'] text-4xl leading-none">TOP SECRET</h2>
+            <p className="font-mono text-xs font-bold bg-black text-white inline-block px-1">CLASSIFIED DATA</p>
+          </div>
+          <button onClick={onClose} className="font-mono font-bold text-xl hover:text-red-600 border-2 border-transparent hover:border-black px-2 transition-all">X</button>
         </div>
 
         <div className="flex flex-col items-center gap-6">
-          <div className="p-4 border-4 border-black bg-white shadow-[4px_4px_0_#000]">
-             <QRCodeSVG value={url} size={150} />
+          <div className="p-3 border-4 border-black bg-white shadow-[6px_6px_0_#000]">
+             <QRCodeSVG value={url} size={160} />
           </div>
           
           <div className="w-full">
-            <p className="font-mono text-xs font-bold mb-1 uppercase text-gray-500">Mission Link:</p>
-            <div className="flex gap-2">
+            <p className="font-mono text-[10px] font-bold mb-1 uppercase text-gray-500 tracking-widest">Mission Access Link:</p>
+            <div className="flex gap-0">
               <input 
                 readOnly 
                 value={url} 
-                className="flex-1 border-2 border-black px-2 py-1 font-mono text-sm bg-gray-100"
+                className="flex-1 border-4 border-r-0 border-black px-3 py-2 font-mono text-xs bg-gray-100 text-gray-600 outline-none"
               />
               <button 
                 onClick={handleCopy}
-                className={`border-2 border-black px-3 font-bold font-mono transition-all ${copied ? 'bg-black text-white' : 'bg-yellow-400 hover:bg-yellow-300'}`}
+                className={`border-4 border-black px-4 font-black font-mono text-sm transition-all ${copied ? 'bg-black text-white' : 'bg-yellow-400 hover:bg-yellow-300'}`}
               >
-                {copied ? 'OK!' : 'COPY'}
+                {copied ? 'COPIED' : 'COPY'}
               </button>
             </div>
           </div>
-          
-          <p className="font-mono text-[10px] text-center text-gray-500 italic">
-            "Scan this code to recruit more agents for the celebration."
-          </p>
         </div>
       </motion.div>
     </motion.div>
   );
 };
 
-// --- GIFT BOX COMPONENT ---
+// --- GIFT BOX COMPONENT (Enhanced) ---
 const GiftBox = ({ character, name, onOpen, isLocked = true }) => {
   const [isOpening, setIsOpening] = useState(false);
 
   const handleOpen = () => {
-    if (isLocked) return; // Can't open if locked
+    if (isLocked) return;
     setIsOpening(true);
     setTimeout(() => {
       onOpen();
@@ -76,99 +75,89 @@ const GiftBox = ({ character, name, onOpen, isLocked = true }) => {
 
   return (
     <motion.div 
-      className="flex flex-col items-center justify-center gap-8"
+      className="flex flex-col items-center justify-center w-full max-w-md mx-auto"
       initial={{ scale: 0.8, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
-      transition={{ duration: 0.6 }}
+      transition={{ duration: 0.5 }}
     >
-      {/* TITLE */}
-      <div className="text-center">
-        <h1 className="font-['Bangers'] text-4xl md:text-6xl text-white mb-2 leading-none">SPECIAL DELIVERY!</h1>
-        <p className="font-mono text-lg md:text-2xl font-bold text-yellow-400 tracking-tighter">FOR: {name}</p>
+      {/* HEADER TEXT */}
+      <div className="text-center mb-8 relative">
+        <h1 className="relative font-['Bangers'] text-5xl md:text-7xl text-white leading-none drop-shadow-[4px_4px_0_#000]">
+          SPECIAL DROP
+        </h1>
+        <div className="relative inline-block bg-yellow-400 border-2 border-black px-4 py-1 transform -rotate-2 mt-2 shadow-[4px_4px_0_#000]">
+           <p className="font-mono text-xs md:text-sm font-bold text-black tracking-widest uppercase">Target: {name}</p>
+        </div>
       </div>
 
       {/* GIFT BOX */}
       <motion.div
         onClick={handleOpen}
-        className={isLocked ? "cursor-not-allowed opacity-80" : "cursor-pointer"}
-        animate={isOpening ? { rotateX: 180, opacity: 0 } : { y: [0, -10, 0] }}
-        transition={isOpening ? { duration: 0.8 } : { duration: 2, repeat: Infinity }}
+        className={`relative ${isLocked ? "cursor-not-allowed opacity-90 grayscale-[0.5]" : "cursor-pointer"}`}
+        animate={isOpening ? { rotateX: 180, opacity: 0, scale: 1.5 } : { y: [0, -15, 0] }}
+        transition={isOpening ? { duration: 0.8 } : { duration: 3, repeat: Infinity, ease: "easeInOut" }}
+        whileHover={!isLocked ? { scale: 1.05, rotate: 2 } : {}}
+        whileTap={!isLocked ? { scale: 0.95 } : {}}
       >
-        <div className="relative w-32 h-32 md:w-48 md:h-48">
+        <div className="relative w-40 h-40 md:w-56 md:h-56">
           {/* BOX BODY */}
-          <div className={`absolute inset-0 border-4 border-black shadow-[8px_8px_0_rgba(0,0,0,0.6)] ${
-            isLocked 
-              ? 'bg-gradient-to-br from-gray-500 to-gray-700' 
-              : 'bg-gradient-to-br from-red-500 to-red-700'
+          <div className={`absolute inset-0 border-[6px] border-black shadow-[12px_12px_0_rgba(0,0,0,0.5)] ${
+            isLocked ? 'bg-zinc-600' : 'bg-red-600'
           }`} />
           
-          {/* RIBBON - VERTICAL */}
-          <div className={`absolute left-1/2 top-0 bottom-0 w-8 border-2 border-black/30 -translate-x-1/2 ${
-            isLocked ? 'bg-gray-400' : 'bg-yellow-300'
+          {/* PATTERN ON BOX */}
+          <div className="absolute inset-0 opacity-20" 
+               style={{ backgroundImage: 'radial-gradient(#000 2px, transparent 2px)', backgroundSize: '10px 10px' }}>
+          </div>
+
+          {/* RIBBONS */}
+          <div className={`absolute left-1/2 top-0 bottom-0 w-10 border-x-[3px] border-black/20 -translate-x-1/2 ${
+            isLocked ? 'bg-zinc-400' : 'bg-yellow-400'
+          }`} />
+          <div className={`absolute top-1/2 left-0 right-0 h-10 border-y-[3px] border-black/20 -translate-y-1/2 ${
+            isLocked ? 'bg-zinc-400' : 'bg-yellow-400'
           }`} />
           
-          {/* RIBBON - HORIZONTAL */}
-          <div className={`absolute top-1/2 left-0 right-0 h-8 border-2 border-black/30 -translate-y-1/2 ${
-            isLocked ? 'bg-gray-400' : 'bg-yellow-300'
-          }`} />
-          
-          {/* BOW OR LOCK */}
-          {isLocked ? (
-            // PADLOCK ICON
-            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 md:w-16 md:h-16">
-              {/* Lock body */}
-              <div className="absolute left-1/2 top-1/3 -translate-x-1/2 w-8 h-8 md:w-10 md:h-10 bg-yellow-600 border-3 border-black rounded-b-md -translate-y-1/4" />
-              {/* Lock shackle */}
-              <div className="absolute left-1/2 top-0 -translate-x-1/2 w-6 h-6 md:w-8 md:h-8 border-3 border-black rounded-full bg-transparent" />
-              {/* Keyhole */}
-              <div className="absolute left-1/2 top-2/5 -translate-x-1/2 w-2 h-2 bg-black rounded-full" />
-            </div>
-          ) : (
-            // BOW
-            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 md:w-16 md:h-16">
-              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full">
-                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-6 h-6 md:w-8 md:h-8 bg-yellow-400 rounded-full border-2 border-black" />
-                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-6 h-6 md:w-8 md:h-8 bg-yellow-400 rounded-full border-2 border-black" />
-                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 md:w-4 md:h-4 bg-yellow-500 rounded-full border border-black" />
-              </div>
-            </div>
-          )}
+          {/* INTERACTIVE INDICATOR */}
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+             {isLocked ? (
+                <div className="bg-black text-white p-2 border-2 border-white rounded-lg shadow-lg">
+                    <span className="text-3xl">🔒</span>
+                </div>
+             ) : (
+                <div className="w-16 h-16 bg-yellow-400 rounded-full border-4 border-black flex items-center justify-center shadow-lg animate-bounce">
+                    <span className="font-['Bangers'] text-black text-xl">OPEN</span>
+                </div>
+             )}
+          </div>
         </div>
       </motion.div>
 
-      {/* CLICK HINT */}
-      <motion.div
-        animate={{ scale: [1, 1.1, 1] }}
-        transition={{ duration: 1.5, repeat: Infinity }}
-        className="text-center"
-      >
+      {/* FOOTER HINT */}
+      <div className="mt-10 text-center">
         {isLocked ? (
-          <>
-            <p className="font-['Bangers'] text-2xl md:text-4xl text-red-400 mb-1">LOCKED</p>
-            <p className="font-mono text-sm text-red-300">🔒 Will unlock on birthday!</p>
-          </>
+           <div className="inline-flex items-center gap-2 bg-red-600 text-white px-4 py-2 border-2 border-black">
+              <span className="animate-pulse">●</span>
+              <span className="font-mono text-xs font-bold uppercase">Unlock scheduled for birthday</span>
+           </div>
         ) : (
-          <>
-            <p className="font-['Bangers'] text-2xl md:text-4xl text-white mb-1">TAP TO OPEN</p>
-            <p className="font-mono text-sm text-yellow-300">Click the gift box!</p>
-          </>
+           <p className="font-mono text-sm text-yellow-300 bg-black/50 px-2">Tap box to retrieve contents</p>
         )}
-      </motion.div>
+      </div>
     </motion.div>
   );
 };
 
-// --- VOICE NOTE COMPONENT ---
+// --- VOICE NOTE COMPONENT (Tactical Style) ---
 const VoiceNotePlayer = ({ characterName, name }) => {
   const [isPlaying, setIsPlaying] = useState(false);
-  const audioRef = React.useRef(null);
+  const audioRef = useRef(null);
 
   const voiceFiles = {
     gojo: '/voices/gojo_birthday.mp3',
     leon: '/voices/leon_birthday.mp3',
     levi: '/voices/levi_birthday.mp3',
     eren_jaeger: '/voices/eren_jaeger_birthday.mp3'
-    // Add more as voice files become available
   };
 
   const handlePlay = () => {
@@ -186,96 +175,107 @@ const VoiceNotePlayer = ({ characterName, name }) => {
     <motion.div
       initial={{ scale: 0.9, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
-      className="text-center"
+      className="w-full max-w-lg mx-auto p-4"
     >
-      <div className="mb-6">
-        <h1 className="font-['Bangers'] text-5xl md:text-7xl text-yellow-300 mb-2 animate-pulse">🎉</h1>
-        <h1 className="font-['Bangers'] text-4xl md:text-6xl text-white mb-3">BIRTHDAY GIFT!</h1>
-        <p className="font-mono text-lg text-gray-300 mb-8"><span className="text-yellow-300">{characterName}</span> left a message for {name}:</p>
-      </div>
+      <div className="bg-white border-4 border-black p-1 shadow-[10px_10px_0_rgba(0,0,0,0.5)]">
+        <div className="border-2 border-black border-dashed p-6 bg-yellow-50 flex flex-col items-center gap-6 relative overflow-hidden">
+            
+            {/* Background Decor */}
+            <div className="absolute top-0 right-0 font-['Bangers'] text-9xl text-yellow-200 opacity-50 -rotate-12 select-none pointer-events-none">
+                AUDIO
+            </div>
 
-      {/* PLAYER BOX */}
-      <div className="bg-black/80 border-4 border-white p-6 md:p-8 max-w-md mx-auto backdrop-blur-sm">
-        <div className="mb-6 flex justify-center">
-          <motion.button
-            onClick={handlePlay}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-            className="w-20 h-20 md:w-24 md:h-24 bg-gradient-to-br from-yellow-400 to-yellow-500 border-4 border-black rounded-full flex items-center justify-center shadow-[6px_6px_0_rgba(0,0,0,0.8)] hover:from-yellow-300 hover:to-yellow-400"
-          >
-            <span className="text-4xl md:text-5xl">
-              {isPlaying ? '⏸' : '▶'}
-            </span>
-          </motion.button>
+            <div className="text-center z-10">
+                <h2 className="font-black font-mono text-xl uppercase border-b-4 border-yellow-400 inline-block mb-2">Incoming Transmission</h2>
+                <p className="font-mono text-sm text-gray-600">Sender: <span className="font-bold text-black uppercase">{characterName}</span></p>
+            </div>
+
+            <motion.button
+                onClick={handlePlay}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className={`w-24 h-24 rounded-full border-4 border-black flex items-center justify-center transition-colors z-10 ${
+                    isPlaying ? 'bg-red-500 text-white' : 'bg-yellow-400 text-black'
+                }`}
+            >
+                <span className="text-4xl ml-1">{isPlaying ? '⏸' : '▶'}</span>
+            </motion.button>
+
+            <audio 
+                ref={audioRef} 
+                onEnded={() => setIsPlaying(false)}
+                src={voiceFiles[characterName]}
+            />
+
+            <div className="w-full bg-black h-4 rounded-full overflow-hidden border-2 border-black z-10 relative">
+                 {/* Fake visualizer bar */}
+                <div className={`h-full bg-yellow-400 transition-all duration-1000 ${isPlaying ? 'w-full animate-pulse' : 'w-0'}`} />
+            </div>
+            
+            <p className="font-mono text-[10px] font-bold text-gray-400 uppercase tracking-widest z-10">
+                {isPlaying ? 'DECRYPTING AUDIO_FILE_01...' : 'WAITING FOR INPUT...'}
+            </p>
         </div>
-
-        <audio 
-          ref={audioRef} 
-          onEnded={() => setIsPlaying(false)}
-          src={voiceFiles[characterName]}
-        />
-
-        <p className="font-mono text-xs text-yellow-300 uppercase tracking-wider">
-          {isPlaying ? '🔊 Playing...' : '⏺️ Ready to play'}
-        </p>
       </div>
-
-      <p className="font-mono text-[10px] text-gray-500 mt-6 uppercase">
-        Voice message from your chosen agent
-      </p>
     </motion.div>
   );
 };
 
-// --- OPTIMIZED PLACEHOLDER COMPONENTS ---
-const PlaceholderWish = ({ name }) => (
-  <motion.div 
-    initial={{ scale: 0.8, opacity: 0 }}
-    animate={{ scale: 1, opacity: 1 }}
-    className="text-center p-4 md:p-8 border-4 border-white bg-black/60 backdrop-blur-md"
-  >
-    <h1 className="font-['Bangers'] text-4xl md:text-6xl text-white mb-2 leading-none">MISSION ACCOMPLISHED!</h1>
-    <p className="font-mono text-lg md:text-2xl font-bold text-yellow-400 mb-4 tracking-tighter">HAPPY BIRTHDAY, {name}!</p>
-    <div className="font-['Bangers'] text-7xl md:text-8xl text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.8)] animate-pulse">BOOM!</div>
-  </motion.div>
+// --- MANGA TIME BOX ---
+const MangaTimeBox = ({ val, label, urgent }) => (
+    <div className="flex flex-col gap-1 w-full group">
+        <div className={`
+            relative flex items-center justify-center aspect-square md:aspect-[4/3]
+            border-4 border-black transition-transform group-hover:-translate-y-1
+            ${urgent ? 'bg-red-600 text-white' : 'bg-white text-black'}
+            shadow-[4px_4px_0_rgba(0,0,0,1)]
+        `}>
+            {urgent && (
+                <div className="absolute top-1 right-1 w-2 h-2 md:w-3 md:h-3 bg-yellow-400 border border-black rounded-full animate-ping" />
+            )}
+            <span className="font-['Bangers'] text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-none mt-1">
+            {val < 10 ? `0${val}` : val}
+            </span>
+            
+            {/* Decorative Lines */}
+            <div className="absolute bottom-1 left-1 w-2 h-2 border-l-2 border-b-2 border-current opacity-50"></div>
+            <div className="absolute top-1 right-1 w-2 h-2 border-r-2 border-t-2 border-current opacity-50"></div>
+        </div>
+        <div className="bg-black text-white font-mono text-[10px] md:text-xs font-bold text-center py-1 uppercase tracking-widest border-2 border-black">
+            {label}
+        </div>
+    </div>
 );
 
-const PlaceholderShare = ({ onClick }) => (
-  <button 
-    onClick={onClick}
-    className="w-full bg-black text-white font-['Bangers'] text-xl py-4 border-2 border-black hover:bg-white hover:text-black transition-all active:scale-95 shadow-[6px_6px_0_rgba(0,0,0,0.2)]"
-  >
-    GET LINK & BARCODE COUNTDOWN
-  </button>
-);
-
+// --- MAIN PAGE COMPONENT ---
 const CountdownMission = () => {
   const { name, day, month, character } = useParams();
+  const navigate = useNavigate();
   const [showShare, setShowShare] = useState(false);
   const [timeLeft, setTimeLeft] = useState(null);
   const [isBirthday, setIsBirthday] = useState(false);
   const [bgPhase, setBgPhase] = useState('calm');
   const [giftOpened, setGiftOpened] = useState(false);
+  const [isCleaningData, setIsCleaningData] = useState(false);
 
   // Character Config
   const CHARACTER_CONFIG = {
     gojo: { img: '/avatar/Gojo_satoru.webp', filter: 'grayscale(100%) contrast(110%) brightness(0.8)', name: 'AGENT GOJO' },
     leon: { img: '/avatar/Leon_scott_keneddy.webp', filter: 'grayscale(100%) contrast(120%) brightness(0.7)', name: 'AGENT LEON' },
     levi: { img: '/avatar/levi_ackermen.webp', filter: 'grayscale(100%) contrast(120%) brightness(0.8)', name: 'CAPTAIN LEVI' },
-    // Fallbacks for old links
     vanguard: { img: '/comicpanel.webp', filter: 'grayscale(100%) sepia(100%) hue-rotate(90deg)', name: 'AGENT VANGUARD' },
     chrono: { img: '/comicpanel.webp', filter: 'grayscale(100%)', name: 'AGENT CHRONO' },
     neon: { img: '/comicpanel2.webp', filter: 'grayscale(100%) contrast(120%)', name: 'AGENT NEON' }
   };
-  // Fallback to 'gojo' if character not found or old link uses 'chrono'
+  
   const activeChar = CHARACTER_CONFIG[character] || CHARACTER_CONFIG['gojo'];
 
   const getPhaseData = (days) => {
-    if (days === 0 && !isBirthday) return { phase: 'critical', dialog: "Tinggal hitungan jam! Semuanya siap di posisi?!" };
-    if (days > 100) return { phase: 'calm', dialog: "Perjalanan masih panjang. Hemat energimu." };
-    if (days > 30)  return { phase: 'intense', dialog: "Target mulai terlihat di radar. Fokus!" };
-    if (days > 0)   return { phase: 'critical', dialog: "YABAI! Waktunya hampir habis! KEMERIAHAN MAKSIMAL!" };
-    return { phase: 'finished', dialog: "Misi Selesai." };
+    if (days === 0 && !isBirthday) return { phase: 'critical', dialog: "HOUR ZERO APPROACHING. POSITIONS!" };
+    if (days > 100) return { phase: 'calm', dialog: "Long haul ahead. Conserve stamina." };
+    if (days > 30)  return { phase: 'intense', dialog: "Target in sight. Lock focus." };
+    if (days > 0)   return { phase: 'critical', dialog: "CRITICAL! Time is running out!" };
+    return { phase: 'finished', dialog: "Mission Complete." };
   };
 
   const bgPhaseColors = {
@@ -312,158 +312,185 @@ const CountdownMission = () => {
     return () => clearInterval(timer);
   }, [day, month]);
 
-  if (!timeLeft) {
-    return <LoadingScreen text="SYNCHRONIZING MISSION DATA..." />;
-  }
-
   const location = useLocation();
   const isFromLoading = location.state?.fromLoading;
+  const phaseData = timeLeft ? getPhaseData(timeLeft.totalDays) : { dialog: "..." };
 
-  const comicVariants = {
-    initial: isFromLoading 
-      ? { opacity: 1, x: '0%', scale: 1 } 
-      : { x: '50%', opacity: 0, scale: 0.9 },
-    animate: { 
-      x: '0%', 
-      opacity: 1, 
-      scale: 1,
-      transition: { duration: 0.6, ease: [0.4, 0.0, 0.2, 1] } 
-    },
-    exit: { 
-      x: '-50%', 
-      opacity: 0, 
-      scale: 0.95,
-      transition: { duration: 0.4, ease: [0.4, 0.0, 1, 1] } 
-    }
+  // Use the LoadingScreen component we defined earlier
+  if (!timeLeft) return <LoadingScreen text="SYNCING MISSION DATA..." />;
+  if (isCleaningData) return <LoadingScreen text="CLEANING DATA..." />;
+
+  const containerVariants = {
+    initial: isFromLoading ? { opacity: 0 } : { opacity: 0 },
+    animate: { opacity: 1, transition: { duration: 0.8 } },
+    exit: { opacity: 0 }
   };
 
-  const phaseData = getPhaseData(timeLeft.totalDays);
+  const handleReturnHome = () => {
+    setIsCleaningData(true);
+    setTimeout(() => {
+      navigate('/');
+    }, 2000);
+  };
 
   return (
-    <div className="flex flex-col min-h-screen bg-white">
+    <div className="flex flex-col min-h-screen bg-neutral-100 font-sans">
+      <motion.button
+        onClick={handleReturnHome}
+        initial={{ x: -100, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        whileHover={{ x: 5, scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        className="fixed top-3 left-3 md:top-6 md:left-6 z-50 group origin-top-left"
+      >
+        <div className="relative bg-yellow-400 border-2 md:border-4 border-black px-4 py-1.5 md:px-6 md:py-2 shadow-[2px_2px_0_#000] md:shadow-[6px_6px_0_#000] hover:shadow-[4px_4px_0_#000] md:hover:shadow-[8px_8px_0_#000] transition-all transform -skew-x-12">
+          <div className="hidden md:block absolute top-0 right-0 w-3 h-3 bg-black transform translate-x-1/2 -translate-y-1/2 rotate-45"></div>
+          <div className="hidden md:block absolute bottom-0 left-0 w-2 h-2 bg-black transform -translate-x-1/2 translate-y-1/2"></div>
+          <div className="flex items-center gap-2 md:gap-3 transform skew-x-12">
+            <div className="bg-black text-white rounded-full w-5 h-5 md:w-8 md:h-8 flex items-center justify-center border-2 border-white/20 group-hover:rotate-180 transition-transform duration-500">
+              <span className="font-mono font-bold text-xs md:text-lg mb-0.5">{'<'}</span>
+            </div>
+            <div className="flex flex-col items-start leading-none">
+              <span className="font-['Bangers'] text-lg md:text-2xl tracking-widest text-black group-hover:text-red-600 transition-colors">
+                RETURN TO CREATE AGAIN
+              </span>
+              <span className="font-mono text-[7px] md:text-[9px] font-bold bg-black text-white px-1 mt-0.5 md:mt-1">
+                SYSTEM.NAV
+              </span>
+            </div>
+          </div>
+        </div>
+      </motion.button>
       <motion.div 
-        variants={comicVariants}
+        variants={containerVariants}
         initial="initial"
         animate="animate"
         exit="exit"
-        className="flex flex-col md:flex-row flex-1 overflow-x-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)]"
+        className="flex-grow grid grid-cols-1 lg:grid-cols-12 min-h-screen"
       >
-      
-      {/* --- PANEL VISUAL (TOP on Mobile, RIGHT on Desktop) --- */}
-      <AnimatePresence mode='wait'>
-        <motion.div 
-            key={bgPhase}
-            className="relative flex-1 flex flex-col justify-center overflow-hidden min-h-[45vh] md:min-h-full order-1 md:order-2"
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.8 }}
-        >
-            <div 
-              className="absolute inset-0 bg-cover bg-center z-0 transition-all duration-1000 scale-105"
-              style={{ 
-                backgroundImage: `url('${activeChar.img}')`,
-                filter: `${bgPhaseColors[bgPhase]} ${character === 'vanguard' ? 'hue-rotate(90deg)' : ''}`
-              }}
-            >
-                <div className="absolute inset-0 mix-blend-overlay bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
-                <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 mix-blend-color-dodge animate-pulse"></div>
+        
+        {/* --- LEFT PANEL: MISSION BRIEF (Desktop: Col 1-5, Mobile: Order 2) --- */}
+        <div className="lg:col-span-5 order-2 lg:order-1 bg-white border-r-0 lg:border-r-8 border-black flex flex-col relative z-20">
+            {/* Sticky Header Strip */}
+            <div className="bg-black text-white p-4 flex justify-end items-center sticky top-0 z-30 shadow-md">
+                <div className="font-mono text-xs font-bold text-gray-400 tracking-widest">
+                    CASE_FILE_#{day}{month}
+                </div>
             </div>
-            
-            <div className="absolute inset-0 z-[1] opacity-25 pointer-events-none"
-              style={{
-                backgroundImage: 'radial-gradient(circle, #000 1.2px, transparent 1.2px)',
-                backgroundSize: '4px 4px'
-              }}
-            />
-            
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent z-10" />
 
-            <div className="relative z-20 p-4 md:p-12 w-full mt-auto mb-8 md:my-auto flex flex-col items-center gap-8">
-            {isBirthday && giftOpened ? (
-                <VoiceNotePlayer characterName={character} name={name} />
-            ) : isBirthday && !giftOpened ? (
-                <GiftBox character={character} name={name} onOpen={() => setGiftOpened(true)} isLocked={false} />
-            ) : (
-                <>
-                  <div className="scale-75 md:scale-100">
-                    <GiftBox character={character} name={name} onOpen={() => {}} isLocked={true} />
-                  </div>
-                  <div className="w-full max-w-4xl">
-                    <div className="grid grid-cols-4 gap-2 md:gap-4 px-2">
-                        <MangaTimeBox val={timeLeft.totalDays} label="DAYS" urgent={timeLeft.totalDays < 7} />
-                        <MangaTimeBox val={timeLeft.hours} label="HRS" />
-                        <MangaTimeBox val={timeLeft.minutes} label="MIN" />
-                        <MangaTimeBox val={timeLeft.seconds} label="SEC" urgent={true} />
+            {/* Content Body */}
+            <div className="p-8 md:p-12 flex flex-col h-full justify-center">
+                
+                {/* Stamp / Title */}
+                <div className="mb-8 border-4 border-black inline-block p-4 transform -rotate-1 self-start shadow-[8px_8px_0_#000] bg-white">
+                    <p className="font-mono text-[10px] font-bold uppercase tracking-widest bg-black text-white px-1 mb-1 inline-block">Target Identity</p>
+                    <h1 className="font-['Bangers'] text-6xl md:text-7xl leading-none text-black uppercase break-all">
+                        {name}
+                    </h1>
+                </div>
+
+                {/* Status Report Box */}
+                <div className="bg-gray-50 border-l-8 border-black p-6 mb-10 relative shadow-inner">
+                    <div className="absolute -top-3 left-4 bg-black text-white px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider">
+                        Agent Report // {activeChar.name}
                     </div>
-                  </div>
-                </>
-            )}
+                    <p className="font-serif italic font-bold text-2xl md:text-3xl text-gray-800 leading-tight">
+                        "{phaseData.dialog}"
+                    </p>
+                    <div className="mt-4 flex items-center gap-2">
+                        <div className={`h-3 w-3 rounded-full ${timeLeft.totalDays === 0 ? 'bg-red-600 animate-ping' : 'bg-green-500'}`}></div>
+                        <span className="font-mono text-xs font-bold text-gray-500 uppercase">
+                            {timeLeft.totalDays === 0 ? 'STATUS: CRITICAL' : 'STATUS: MONITORING'}
+                        </span>
+                    </div>
+                </div>
+
+                {/* Action Button */}
+                <div className="mt-auto">
+                    <button 
+                        onClick={() => setShowShare(true)}
+                        className="group w-full relative bg-yellow-400 h-16 border-4 border-black transition-all hover:-translate-y-1 hover:shadow-[8px_8px_0_#000] active:translate-y-0 active:shadow-none"
+                    >
+                        <div className="absolute inset-0 flex items-center justify-center font-['Bangers'] text-2xl tracking-wide gap-2 group-hover:gap-4 transition-all z-10">
+                            <span>RECRUIT AGENTS</span>
+                            <span className="text-xl">➔</span>
+                        </div>
+                        {/* Striped pattern overlay */}
+                        <div className="absolute inset-0 opacity-10 bg-[repeating-linear-gradient(45deg,#000,#000_10px,transparent_10px,transparent_20px)] pointer-events-none"></div>
+                    </button>
+                    <p className="text-center font-mono text-[10px] text-gray-400 mt-3 uppercase">
+                        Secure line encrypted • Do not distribute to civilians
+                    </p>
+                </div>
             </div>
-        </motion.div>
+        </div>
+
+        {/* --- RIGHT PANEL: VISUAL & COUNTDOWN (Desktop: Col 6-12, Mobile: Order 1) --- */}
+        <div className="lg:col-span-7 order-1 lg:order-2 relative bg-neutral-900 overflow-hidden min-h-[50vh] flex flex-col">
+            
+            {/* Dynamic Background Image */}
+            <AnimatePresence mode='wait'>
+                <motion.div 
+                    key={bgPhase}
+                    className="absolute inset-0 bg-cover bg-center"
+                    initial={{ opacity: 0 }} 
+                    animate={{ opacity: 1 }} 
+                    exit={{ opacity: 0 }} 
+                    transition={{ duration: 1 }}
+                    style={{ 
+                        backgroundImage: `url('${activeChar.img}')`,
+                        filter: `${bgPhaseColors[bgPhase]} ${character === 'vanguard' ? 'hue-rotate(90deg)' : ''}`
+                    }}
+                />
+            </AnimatePresence>
+
+            {/* Overlays for Texture/Atmosphere */}
+            <div className="absolute inset-0 bg-[radial-gradient(circle,rgba(0,0,0,0.8)_1px,transparent_1px)] bg-[length:4px_4px] opacity-40 pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-90" />
+            
+            {/* Content Layer */}
+            <div className="relative z-10 flex-grow flex flex-col justify-center items-center p-6 md:p-12 w-full">
+                
+                {/* Main Interactive Content (Gift/Audio) */}
+                <div className="w-full flex-grow flex items-center justify-center">
+                    {isBirthday && giftOpened ? (
+                        <VoiceNotePlayer characterName={character} name={name} />
+                    ) : isBirthday && !giftOpened ? (
+                        <GiftBox character={character} name={name} onOpen={() => setGiftOpened(true)} isLocked={false} />
+                    ) : (
+                        <div className="w-full flex flex-col items-center">
+                            <div className="scale-75 md:scale-100 mb-8 md:mb-0">
+                                <GiftBox character={character} name={name} onOpen={() => {}} isLocked={true} />
+                            </div>
+                        </div>
+                    )}
+                </div>
+
+                {/* Countdown Timer (Only visible before birthday) */}
+                {!isBirthday && (
+                    <div className="w-full max-w-3xl mx-auto mt-4 md:mt-8">
+                        <div className="grid grid-cols-4 gap-2 md:gap-4">
+                            <MangaTimeBox val={timeLeft.totalDays} label="DAYS" urgent={timeLeft.totalDays < 7} />
+                            <MangaTimeBox val={timeLeft.hours} label="HOURS" />
+                            <MangaTimeBox val={timeLeft.minutes} label="MINS" />
+                            <MangaTimeBox val={timeLeft.seconds} label="SECS" urgent={true} />
+                        </div>
+                    </div>
+                )}
+            </div>
+        </div>
+
+      </motion.div>
+
+      <AnimatePresence>
+        {showShare && <ShareModal url={window.location.href} onClose={() => setShowShare(false)} />}
       </AnimatePresence>
 
-      {/* --- PANEL INFO (BOTTOM on Mobile, LEFT on Desktop) --- */}
-      <div className="relative z-30 flex-none w-full md:flex-1 md:w-auto bg-white border-t-8 md:border-t-0 md:border-r-8 border-black p-6 md:p-10 flex flex-col justify-between order-2 md:order-1 min-h-[55vh] md:min-h-full">
-        <div className="space-y-6">
-            <Link to="/" className="group inline-flex items-center text-black font-mono font-black text-xs md:text-sm no-underline mb-2">
-              <span className="bg-black text-white px-2 py-1 mr-2 group-hover:bg-red-600 transition-colors">← ABORT</span> MISSION_LOG
-            </Link>
-            
-            <div className="overflow-hidden">
-              <div className="font-mono text-[10px] font-bold tracking-[0.3em] bg-black text-white inline-block px-2 py-0.5 mb-2">TARGET_NAME</div>
-              <h2 className="font-['Bangers'] text-5xl md:text-7xl leading-none text-black uppercase break-all">
-                {name}
-              </h2>
-            </div>
-            
-            <div className="w-full h-2 bg-black"></div>
-
-            <div className="bg-gray-50 border-l-8 border-black p-4 md:p-6 shadow-inner">
-              <div className="font-mono text-[10px] font-bold tracking-widest text-gray-400 mb-2 underline uppercase">
-                 INCOMING_MSG // {activeChar.name}
-              </div>
-              <p className="italic font-black text-lg md:text-2xl leading-tight text-black">
-                 "{phaseData.dialog}"
-              </p>
-            </div>
-        </div>
-        
-        <div className="pt-6">
-           <PlaceholderShare onClick={() => setShowShare(true)} />
-           <div className="mt-4 flex justify-between font-mono text-[10px] font-bold text-gray-400 uppercase tracking-tighter">
-             <span>System: Active</span>
-             <span>Ref: 00-BDAY-2026</span>
-           </div>
-        </div>
-
-        <AnimatePresence>
-          {showShare && <ShareModal url={window.location.href} onClose={() => setShowShare(false)} />}
-        </AnimatePresence>
+      <div className="relative z-50">
+        <Footer />
       </div>
-
-    </motion.div>
-
-      <Footer />
     </div>
   );
 };
-
-const MangaTimeBox = ({ val, label, urgent }) => (
-  <div className={`
-    relative flex flex-col items-center justify-center py-3 md:py-6 px-1 border-2 md:border-4 
-    ${urgent ? 'bg-black text-white border-white' : 'bg-black/70 text-white border-white backdrop-blur-md'}
-    shadow-[4px_4px_0_rgba(255,255,255,0.2)] transition-transform active:scale-95
-  `}>
-    <div className="font-['Bangers'] text-3xl sm:text-4xl md:text-6xl lg:text-8xl leading-none mb-1">
-      {val < 10 ? `0${val}` : val}
-    </div>
-    <div className="font-mono text-[9px] md:text-xs font-bold tracking-[0.2em] border-t border-white/30 pt-1 w-[80%] text-center opacity-80 uppercase">
-        {label}
-    </div>
-    {urgent && (
-      <div className="absolute -top-2 -right-2 bg-red-600 text-white text-[8px] md:text-[10px] px-1 font-bold animate-bounce border border-black">
-        !
-      </div>
-    )}
-  </div>
-);
 
 export default CountdownMission;
