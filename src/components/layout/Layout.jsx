@@ -2,46 +2,51 @@ import React from 'react';
 
 const MangaLayout = ({ children, sidePanelContent }) => {
   return (
-    <div className="flex flex-col min-h-screen w-full md:flex-row border-0 md:border-4 border-black bg-white">
-      {/* Panel Kiri (Konten Utama) */}
-      <div className="flex-1 bg-white p-6 md:p-12 border-b-4 md:border-b-0 md:border-r-4 border-black relative z-10 flex flex-col justify-center order-2 md:order-1 min-h-[50vh]">
-        {children}
-      </div>
+    // WRAPPER UTAMA: Dark Mode Base
+    <div className="flex flex-col lg:flex-row min-h-[100dvh] w-full bg-zinc-900 text-white overflow-x-hidden">
       
-      {/* Panel Kanan (Visual/Illustration) */}
-      <div className="relative h-[40vh] md:h-auto md:flex-1 bg-black overflow-hidden order-1 md:order-2 border-b-4 md:border-b-0 border-black group">
-        {/* Background Image with Scale Effect */}
+      {/* --- PANEL KANAN (VISUAL / JUDUL) --- */}
+      {/* Mobile: Order 1 (Muncul Pertama/Atas) */}
+      {/* Desktop: Order 2 (Muncul Kanan) */}
+      <div className="relative order-1 lg:order-2 w-full h-[40vh] lg:h-auto lg:w-[45%] lg:flex-1 overflow-hidden border-b-4 lg:border-b-0 lg:border-l-4 border-yellow-400 bg-black group">
+        
+        {/* Background Image (Zoom Effect) */}
         <div 
-          className="absolute inset-0 opacity-60 bg-cover bg-center grayscale contrast-125 mix-blend-screen transition-transform duration-1000 group-hover:scale-105"
-          style={{ backgroundImage: "url('/comicpanel2.webp')" }}
+          className="absolute inset-0 opacity-50 bg-cover bg-center grayscale contrast-125 mix-blend-screen transition-transform duration-[2000ms] ease-out group-hover:scale-110"
+          style={{ backgroundImage: "url('/comicpanel2.webp')" }} // Pastikan gambar ada
         />
         
-        {/* Professional Gradients & Overlays */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-90" />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-transparent to-black/80 opacity-60" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-transparent via-black/20 to-black opacity-80" />
+        {/* Gradients & Overlay untuk keterbacaan */}
+        <div className="absolute inset-0 bg-gradient-to-t from-zinc-900 via-transparent to-zinc-900/50" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-transparent via-black/40 to-black opacity-80" />
 
-        {/* COMIC PANEL LINES */}
-        {/* Vertical Lines */}
+        {/* Comic Texture Lines (Halftone Pattern) */}
         <div className="absolute inset-0 opacity-20 pointer-events-none" 
-             style={{
-               backgroundImage: `linear-gradient(90deg, white 1px, transparent 1px)`,
-               backgroundSize: '60px 100%'
-             }}
-        />
-        {/* Horizontal Lines */}
-        <div className="absolute inset-0 opacity-15 pointer-events-none" 
-             style={{
-               backgroundImage: `linear-gradient(0deg, white 1px, transparent 1px)`,
-               backgroundSize: '100% 60px'
-             }}
-        />
+             style={{ backgroundImage: `linear-gradient(90deg, #333 1px, transparent 1px)`, backgroundSize: '40px 100%' }} />
 
-        {/* Content */}
-        <div className="relative z-10 h-full w-full flex items-center justify-center p-8">
+        {/* Konten Panel Samping (Judul) */}
+        <div className="relative z-10 h-full w-full flex items-center justify-center p-6">
            {sidePanelContent}
         </div>
       </div>
+
+      {/* --- PANEL KIRI (FORM UTAMA) --- */}
+      {/* Mobile: Order 2 (Muncul Bawah) */}
+      {/* Desktop: Order 1 (Muncul Kiri) */}
+      <div className="relative order-2 lg:order-1 w-full lg:w-[55%] flex flex-col justify-center bg-zinc-900 min-h-[60vh] lg:min-h-screen">
+        
+        {/* Konten Form */}
+        <div className="flex-1 flex flex-col justify-center relative z-10">
+            {children}
+        </div>
+
+        {/* Hiasan Background di Form */}
+         <div className="absolute inset-0 -z-0 opacity-[0.03]" 
+             style={{backgroundImage: 'radial-gradient(#fff 1px, transparent 1px)', backgroundSize: '30px 30px'}}
+        />
+
+      </div>
+
     </div>
   );
 };

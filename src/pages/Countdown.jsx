@@ -7,12 +7,11 @@ import LoadingScreen from '../components/ui/LoadingScreen';
 import BackButton from '../components/ui/BackButton';
 
 // --- PERSONA 5 CONSTANTS ---
-const P5_YELLOW = "#fbbf24";
-const P5_WHITE = "#ffffff";
+const P5_BLACK = "#101010";
 
 // --- UTILS: JAGGED EDGE SVG ---
 const JaggedEdge = ({ className }) => (
-  <div className={`overflow-hidden w-full h-4 ${className}`}>
+  <div className={`overflow-hidden w-full h-3 sm:h-4 ${className}`}>
     <svg viewBox="0 0 100 10" preserveAspectRatio="none" className="w-full h-full">
       <polygon points="0,0 5,10 10,0 15,10 20,0 25,10 30,0 35,10 40,0 45,10 50,0 55,10 60,0 65,10 70,0 75,10 80,0 85,10 90,0 95,10 100,0 100,10 0,10" fill="currentColor" />
     </svg>
@@ -39,56 +38,56 @@ const CallingCardModal = ({ url, onClose }) => {
   return (
     <motion.div 
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-white/80 backdrop-blur-sm"
+        className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm"
       onClick={onClose}
     >
       <motion.div 
         initial={{ rotate: -10, scale: 0.5, y: 100 }} 
         animate={{ rotate: -2, scale: 1, y: 0 }}
         exit={{ rotate: 10, scale: 0.5, y: 100 }}
-        className="relative max-w-md w-full"
+        className="relative w-full max-w-[320px] sm:max-w-md"
         onClick={e => e.stopPropagation()}
       >
         {/* Card Body */}
-        <div className="bg-yellow-300 p-1 shadow-[20px_20px_0_rgba(0,0,0,0.8)] transform skew-x-[-5deg]">
-          <div className="bg-white border-4 border-black p-6 flex flex-col items-center relative overflow-hidden">
+        <div className="bg-black p-1 shadow-[10px_10px_0_rgba(0,0,0,0.8)] sm:shadow-[20px_20px_0_rgba(0,0,0,0.8)] transform skew-x-[-3deg]">
+          <div className="bg-black border-2 sm:border-4 border-white p-4 sm:p-6 flex flex-col items-center relative overflow-hidden">
             
             {/* Background Texture */}
             <div className="absolute inset-0 opacity-20" 
-                 style={{backgroundImage: 'radial-gradient(black 1px, transparent 1px)', backgroundSize: '10px 10px'}}>
+                 style={{backgroundImage: 'radial-gradient(white 1px, transparent 1px)', backgroundSize: '10px 10px'}}>
             </div>
 
             {/* Calling Card Header */}
-            <div className="bg-yellow-300 text-black font-['Bangers'] text-4xl px-4 py-1 -rotate-2 border-2 border-black absolute -top-4 -left-4 shadow-[4px_4px_0_#000]">
+            <div className="bg-yellow-400 text-black font-['Bangers'] text-xl sm:text-4xl px-3 py-1 -rotate-2 border-2 border-black absolute -top-3 sm:-top-4 -left-3 sm:-left-4 shadow-[3px_3px_0_#fff]">
               TAKE YOUR HEART
             </div>
 
-            <h2 className="text-black font-mono font-bold mt-6 mb-4 text-center tracking-widest uppercase">
+            <h2 className="text-white font-mono font-bold mt-5 sm:mt-6 mb-3 text-center tracking-widest uppercase text-xs sm:text-base">
               SECRET INVITATION LINK
             </h2>
 
-            <div className="bg-black p-2 transform rotate-1 border-4 border-yellow-300 mb-6">
-              <QRCodeSVG value={url} size={150} fgColor={P5_WHITE} bgColor="#000000" />
+            <div className="bg-white p-2 transform rotate-1 border-2 sm:border-4 border-black mb-4">
+              <QRCodeSVG value={url} size={130} fgColor={P5_BLACK} bgColor="#ffffff" className="sm:w-[150px] sm:h-[150px]" />
             </div>
 
-            <div className="w-full flex gap-2">
+            <div className="w-full flex flex-col gap-2">
               <input 
                 readOnly 
                 value={url} 
-                className="flex-1 bg-gray-100 border-2 border-black text-yellow-500 font-mono text-xs px-2 py-2 outline-none"
+                className="w-full bg-neutral-900 border border-white text-yellow-400 font-mono text-xs p-2 outline-none text-center"
               />
               <button 
                 onClick={handleCopy}
-                className={`px-4 font-black font-sans uppercase border-2 border-black transition-all ${copied ? 'bg-black text-yellow-300' : 'bg-yellow-300 text-black hover:bg-yellow-400'}`}
+                className={`w-full py-2 font-black font-sans uppercase border-2 border-white transition-all text-sm ${copied ? 'bg-white text-black' : 'bg-black text-white active:bg-yellow-400 active:text-black'}`}
               >
-                {copied ? 'STOLEN!' : 'STEAL'}
+                {copied ? 'STOLEN!' : 'COPY LINK'}
               </button>
             </div>
           </div>
         </div>
         
         {/* Close Button X */}
-        <button onClick={onClose} className="absolute -top-10 -right-5 text-black font-['Bangers'] text-5xl drop-shadow-[4px_4px_0_#fbbf24] hover:scale-110 transition-transform">
+        <button onClick={onClose} className="absolute -top-10 -right-2 text-white font-['Bangers'] text-4xl drop-shadow-[4px_4px_0_#000] active:scale-90 transition-transform">
           X
         </button>
       </motion.div>
@@ -110,63 +109,44 @@ const PhantomGiftBox = ({ character, name, onOpen, isLocked = true }) => {
 
   return (
     <motion.div 
-      className="relative group"
+      className="relative group scale-90 sm:scale-100"
       initial={{ scale: 0.8, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
     >
-      {/* Target Notification */}
-      <div className="absolute -top-16 left-1/2 -translate-x-1/2 w-64 text-center z-10">
-        <div className="bg-white text-black px-2 py-1 transform -skew-x-12 border-2 border-yellow-300 shadow-[4px_4px_0_#fbbf24]">
-          <p className="font-['Bangers'] text-xl tracking-wider transform skew-x-12">TARGET: {name}</p>
+      <div className="absolute -top-12 sm:-top-16 left-1/2 -translate-x-1/2 w-64 text-center z-10 px-2 pointer-events-none">
+        <div className="bg-black text-white px-2 py-1 transform -skew-x-12 border-2 border-yellow-400 shadow-[4px_4px_0_#000]">          
+            <p className="font-['Bangers'] text-lg sm:text-xl tracking-wider transform skew-x-12 truncate">TARGET: {name}</p>
         </div>
       </div>
 
       <motion.div
         onClick={handleOpen}
-        className={`relative w-48 h-48 md:w-64 md:h-64 flex items-center justify-center ${isLocked ? "cursor-not-allowed grayscale" : "cursor-pointer"}`}
+        className={`relative w-40 h-40 sm:w-48 sm:h-48 md:w-64 md:h-64 flex items-center justify-center ${isLocked ? "cursor-not-allowed grayscale" : "cursor-pointer"}`}
         animate={isOpening ? { rotate: [0, -10, 10, -10, 0], scale: 1.2, opacity: 0 } : { y: [0, -10, 0] }}
         transition={isOpening ? { duration: 0.5 } : { duration: 4, repeat: Infinity, ease: "easeInOut" }}
         whileHover={!isLocked ? { scale: 1.05, rotate: -2 } : {}}
       >
-        {/* The Box - Stylized as a Treasure Chest */}
-        <div className={`w-full h-full bg-white border-4 border-black relative shadow-[10px_10px_0_#fbbf24] transform rotate-3`}>
-          {/* Pattern */}
-          <div className="absolute inset-0 opacity-30" style={{backgroundImage: 'repeating-linear-gradient(135deg, #ddd, #ddd 10px, transparent 10px, transparent 20px)'}} />
+        <div className={`w-full h-full bg-black border-2 sm:border-4 border-white relative shadow-[6px_6px_0_#000] sm:shadow-[10px_10px_0_#000] transform rotate-3`}>
+          <div className="absolute inset-0 opacity-30" style={{backgroundImage: 'repeating-linear-gradient(135deg, #333, #333 10px, transparent 10px, transparent 20px)'}} />
           
-          {/* Cross Tape */}
           <div className="absolute inset-0 flex items-center justify-center">
-             <div className="w-full h-8 bg-yellow-300 border-y-2 border-black absolute transform -rotate-3"></div>
-             <div className="h-full w-8 bg-yellow-300 border-x-2 border-black absolute transform -rotate-3"></div>
+             <div className="w-full h-6 sm:h-8 bg-yellow-400 border-y-2 border-black absolute transform -rotate-3"></div>
+             <div className="h-full w-6 sm:w-8 bg-yellow-400 border-x-2 border-black absolute transform -rotate-3"></div>
           </div>
 
-          {/* Center Icon */}
           <div className="absolute inset-0 flex items-center justify-center z-20">
              {isLocked ? (
-                <div className="bg-black p-3 border-2 border-white transform rotate-45 shadow-[4px_4px_0_#fbbf24]">
-                   <div className="transform -rotate-45 font-black text-white text-2xl">🔒</div>
+                <div className="bg-white p-2 border-2 border-black transform rotate-45 shadow-[4px_4px_0_#000]">
+                   <div className="transform -rotate-45 font-black text-black text-2xl">🔒</div>
                 </div>
              ) : (
-                <div className="bg-black text-yellow-300 px-4 py-2 font-['Bangers'] text-2xl border-2 border-white transform -rotate-6 animate-pulse shadow-[5px_5px_0_#fbbf24]">
+                <div className="bg-yellow-400 text-black px-3 py-2 font-['Bangers'] text-xl border-2 border-black transform -rotate-6 animate-pulse shadow-[5px_5px_0_#000]">
                    OPEN ME!
                 </div>
              )}
           </div>
         </div>
       </motion.div>
-
-      <div className="mt-8 text-center">
-         {isLocked ? (
-             <div className="bg-white inline-block px-4 py-1 transform -skew-x-12 border border-black">
-                 <span className="text-yellow-500 font-mono font-bold text-xs uppercase tracking-widest transform skew-x-12 block">
-                     Security Level: MAX
-                 </span>
-             </div>
-         ) : (
-             <div className="bg-yellow-300 text-black inline-block px-4 py-1 font-['Bangers'] text-xl tracking-widest border-2 border-black shadow-[4px_4px_0_#000]">
-                 TREASURE SECURED
-             </div>
-         )}
-      </div>
     </motion.div>
   );
 };
@@ -195,46 +175,41 @@ const PhantomAudio = ({ characterName, name }) => {
   };
 
   return (
-    <motion.div initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="w-full max-w-lg mx-auto p-4">
-      <div className="bg-white p-1 transform -rotate-1 shadow-[10px_10px_0_#fbbf24]">
-        <div className="border-2 border-black p-6 bg-gray-100 relative overflow-hidden">
-            {/* Visualizer Lines Background */}
+    <motion.div initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="w-full max-w-sm sm:max-w-lg mx-auto p-2 sm:p-4">
+      <div className="bg-black p-1 transform -rotate-1 shadow-[6px_6px_0_#000] sm:shadow-[10px_10px_0_#000]">
+        <div className="border-2 border-white p-4 bg-neutral-900 relative overflow-hidden">
             <div className="absolute inset-0 flex justify-between opacity-20 pointer-events-none">
-                {[...Array(20)].map((_, i) => (
-                    <div key={i} className={`w-1 bg-yellow-300 h-full transform skew-x-12`} />
+                {[...Array(15)].map((_, i) => (
+                    <div key={i} className={`w-1 bg-yellow-400 h-full transform skew-x-12`} />
                 ))}
             </div>
 
             <div className="relative z-10 flex flex-col items-center">
-                <h3 className="text-black font-['Bangers'] text-3xl mb-4 text-shadow-yellow tracking-wide">
+                <h3 className="text-white font-['Bangers'] text-2xl mb-4 tracking-wide text-center">
                     CONFIDENTIAL AUDIO
                 </h3>
                 
                 <motion.button
                     onClick={handlePlay}
-                    whileHover={{ scale: 1.1, rotate: 5 }}
                     whileTap={{ scale: 0.9 }}
-                    className={`w-20 h-20 flex items-center justify-center border-4 border-black transition-all ${isPlaying ? 'bg-yellow-300' : 'bg-white'} shadow-[4px_4px_0_#000]`}
+                    className={`w-16 h-16 flex items-center justify-center border-4 border-white transition-all ${isPlaying ? 'bg-yellow-400' : 'bg-black'} shadow-[4px_4px_0_#fff]`}
                 >
                     {isPlaying ? (
-                        <div className="flex gap-2">
-                           <div className="w-2 h-8 bg-black" />
-                           <div className="w-2 h-8 bg-black" />
-                        </div>
+                        <div className="flex gap-2"><div className="w-2 h-6 bg-white" /><div className="w-2 h-6 bg-white" /></div>
                     ) : (
-                         <div className="w-0 h-0 border-t-[15px] border-t-transparent border-l-[30px] border-l-black border-b-[15px] border-b-transparent ml-2" />
+                         <div className="w-0 h-0 border-t-[10px] border-t-transparent border-l-[20px] border-l-white border-b-[10px] border-b-transparent ml-1" />
                     )}
                 </motion.button>
                 
-                <div className="mt-4 w-full bg-gray-300 h-2 skew-x-[-20deg] border border-gray-400">
+                <div className="mt-4 w-full bg-gray-800 h-2 skew-x-[-20deg] border border-gray-600">
                     <motion.div 
-                        className="h-full bg-yellow-300"
+                        className="h-full bg-yellow-400"
                         animate={{ width: isPlaying ? "100%" : "0%" }}
-                        transition={{ duration: 10, ease: "linear" }} // Mock duration
+                        transition={{ duration: 10, ease: "linear" }}
                     />
                 </div>
                 
-                <p className="mt-2 text-yellow-600 font-mono text-xs font-bold bg-white px-2">
+                <p className="mt-2 text-yellow-400 font-mono text-[10px] font-bold bg-black px-2">
                     SENDER: {characterName.toUpperCase()}
                 </p>
                 <audio ref={audioRef} onEnded={() => setIsPlaying(false)} src={voiceFiles[characterName]} />
@@ -245,25 +220,22 @@ const PhantomAudio = ({ characterName, name }) => {
   );
 };
 
-// --- P5 CLOCK COMPONENT ---
+// --- P5 CLOCK COMPONENT (RESPONSIVE) ---
 const PersonaClock = ({ val, label, urgent }) => (
-    <div className={`relative group transform ${urgent ? 'scale-110' : ''}`}>
+    <div className={`relative group transform ${urgent ? 'scale-105' : ''}`}>
         <div className={`
-            bg-white text-black border-4 border-black
-            p-2 sm:p-4 min-w-[80px] sm:min-w-[100px]
+            bg-black text-white border-2 sm:border-4 border-white
+            p-2 sm:p-4 min-w-[65px] xs:min-w-[75px] sm:min-w-[100px]
             flex flex-col items-center justify-center
-            shadow-[8px_8px_0_#fbbf24]
-            transition-transform duration-300
-            hover:-translate-y-2 hover:shadow-[12px_12px_0_#fbbf24]
+            shadow-[4px_4px_0_#000] sm:shadow-[8px_8px_0_#000]
             ${urgent ? 'animate-pulse border-yellow-400 text-yellow-400' : ''}
-            clip-path-polygon
         `}
         style={{ clipPath: 'polygon(10% 0, 100% 0, 100% 90%, 90% 100%, 0 100%, 0 10%)' }}
         >
-            <span className="font-['Bangers'] text-5xl sm:text-7xl leading-none tracking-tighter drop-shadow-md">
+            <span className="font-['Bangers'] text-3xl sm:text-6xl md:text-7xl leading-none tracking-tighter drop-shadow-md">
                 {val < 10 ? `0${val}` : val}
             </span>
-            <span className="bg-black text-yellow-300 font-black font-sans text-[10px] sm:text-xs px-2 py-0.5 uppercase tracking-widest transform -skew-x-12 mt-1">
+            <span className="bg-white text-black font-black font-sans text-[8px] sm:text-xs px-1 sm:px-2 py-0.5 uppercase tracking-widest transform -skew-x-12 mt-1">
                 {label}
             </span>
         </div>
@@ -273,12 +245,10 @@ const PersonaClock = ({ val, label, urgent }) => (
 // --- MAIN PAGE ---
 const CountdownMission = () => {
   const { name, day, month, character } = useParams();
-  const navigate = useNavigate();
   const [showShare, setShowShare] = useState(false);
   const [timeLeft, setTimeLeft] = useState(null);
   const [isBirthday, setIsBirthday] = useState(false);
   const [giftOpened, setGiftOpened] = useState(false);
-  const [isCleaningData, setIsCleaningData] = useState(false);
 
   // Character Data
   const CHARACTER_CONFIG = {
@@ -325,102 +295,51 @@ const CountdownMission = () => {
     return () => clearInterval(timer);
   }, [day, month]);
 
-  const location = useLocation();
-  const isFromLoading = location.state?.fromLoading;
   const phaseData = timeLeft ? getPhaseData(timeLeft.totalDays) : { dialog: "..." };
 
   if (!timeLeft) return <LoadingScreen text="INFILTRATING..." />;
-  if (isCleaningData) return <LoadingScreen text="ESCAPING..." />;
+
+  // --- HANDLE BACK BUTTON ---
+  // Kita inject fungsi back ke button jika ingin ada efek loading, 
+  // tapi BackButton di halaman ini sudah default link to="/" yang oke.
+  // Jika ingin custom back, bisa gunakan onClick dan logic loading.
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#f5f5f5] font-sans overflow-x-hidden selection:bg-yellow-300 selection:text-black">
+    <div className="flex flex-col min-h-[100dvh] bg-zinc-900 font-sans overflow-x-hidden selection:bg-yellow-400 selection:text-black">
       
       {/* --- BACKGROUND GRAPHICS --- */}
-      <div className="fixed inset-0 z-0 opacity-20 pointer-events-none">
-         {/* Halftone Pattern */}
-         <div className="absolute inset-0" style={{backgroundImage: 'radial-gradient(#ddd 1px, transparent 1px)', backgroundSize: '20px 20px'}}></div>
-         {/* Dynamic Yellow Shape */}
-         <div className="absolute top-0 right-0 w-[80vw] h-[120vh] bg-yellow-200 transform -skew-x-12 translate-x-1/4"></div>
+      <div className="fixed inset-0 z-0 opacity-10 pointer-events-none">
+         <div className="absolute inset-0" style={{backgroundImage: 'radial-gradient(#fff 1px, transparent 1px)', backgroundSize: '30px 30px'}}></div>
       </div>
 
-      {/* --- RETURN BUTTON (MENU STYLE) --- */}
-      <BackButton to="/" label="RETURN" />
+      <BackButton to="/" label="BACK" />
 
+      {/* --- MAIN LAYOUT: Mobile Stacked, Desktop Grid --- */}
       <motion.div 
-        className="flex-grow grid grid-cols-1 lg:grid-cols-12 min-h-screen relative z-10"
+        className="flex-grow flex flex-col lg:grid lg:grid-cols-12 relative z-10"
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}
       >
         
-        {/* --- LEFT PANEL: STATS & DIALOGUE (Col 1-5) --- */}
-        <div className="lg:col-span-5 order-2 lg:order-1 flex flex-col justify-center p-6 lg:p-12 relative">
-            {/* Header Date/Weather (Cosmetic) */}
-            <div className="absolute top-0 left-0 w-full bg-white text-black p-2 border-b-4 border-yellow-300 transform -skew-y-1 lg:hidden">
-                <span className="font-mono font-bold ml-4">CASE FILE: {day}/{month}</span>
-            </div>
-
-            {/* CHARACTER DIALOGUE BOX */}
-            <div className="mb-12 relative">
-                {/* Character Portrait (Cutout Style) */}
-                <div className="w-32 h-32 lg:w-48 lg:h-48 absolute -top-16 -left-4 lg:-left-10 z-20 drop-shadow-[5px_5px_0_rgba(0,0,0,0.5)] transform rotate-[-5deg]">
-                     <img src={`/chibi/chibi_${character}.webp`} alt={character} className="w-full h-full object-contain filter grayscale contrast-125" />
-                </div>
-
-                {/* Speech Bubble */}
-                <div className="bg-white border-4 border-black p-6 pt-16 lg:pt-8 lg:pl-32 shadow-[10px_10px_0_#fbbf24] transform -rotate-1 relative z-10 clip-path-polygon"
-                     style={{clipPath: 'polygon(0% 0%, 100% 0%, 100% 90%, 95% 100%, 5% 100%, 0% 90%)'}}>
-                    <div className="text-gray-600 font-mono text-xs font-bold mb-1 uppercase tracking-widest border-b border-gray-400 pb-1">
-                        PHANTOM THIEF // {activeChar.name}
-                    </div>
-                    <p className="text-black font-['Bangers'] text-2xl lg:text-4xl tracking-wide leading-tight">
-                        "{phaseData.dialog}"
-                    </p>
-                    <div className="absolute -right-2 -bottom-2">
-                        <P5Star className="w-8 h-8 text-yellow-400 animate-pulse" />
-                    </div>
-                </div>
-            </div>
-
-            {/* TARGET INFO */}
-            <div className="mb-8">
-                <div className="inline-block bg-black text-white px-4 py-1 transform skew-x-[-10deg] border-2 border-white mb-2">
-                    <span className="font-mono font-black text-sm uppercase transform skew-x-[10deg] block">Current Target</span>
-                </div>
-                <h1 className="font-['Bangers'] text-6xl lg:text-8xl text-black uppercase leading-none drop-shadow-[4px_4px_0_#fbbf24] transform -rotate-2">
-                    {name}
-                </h1>
-            </div>
-
-            {/* ACTION BUTTON */}
-            <button 
-                onClick={() => setShowShare(true)}
-                className="group relative w-full h-20 bg-yellow-300 border-4 border-black overflow-hidden shadow-[8px_8px_0_#000] transform hover:-translate-y-1 hover:shadow-[12px_12px_0_#000] transition-all"
-            >
-                <div className="absolute inset-0 bg-black translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out skew-y-12 origin-bottom-left"></div>
-                <div className="relative z-10 flex items-center justify-center h-full gap-4">
-                    <span className="font-['Bangers'] text-3xl text-black tracking-widest group-hover:text-yellow-300 transition-colors">
-                        SEND CALLING CARD
-                    </span>
-                    <P5Star className="w-6 h-6 text-black group-hover:text-yellow-300 group-hover:rotate-180 transition-all duration-500" />
-                </div>
-            </button>
-        </div>
-
-        {/* --- RIGHT PANEL: COUNTDOWN & VISUAL (Col 6-12) --- */}
-        <div className="lg:col-span-7 order-1 lg:order-2 relative flex flex-col items-center justify-center min-h-[50vh] lg:min-h-screen p-8">
+        {/* --- RIGHT PANEL (VISUALS) - Show FIRST on Mobile --- */}
+        <div className="lg:col-span-7 lg:order-2 relative flex flex-col items-center justify-center min-h-[45vh] sm:min-h-[50vh] lg:min-h-screen p-4 pt-16 lg:p-8 overflow-hidden">
             
             {/* Character Background Splash */}
             <div className="absolute inset-0 z-0">
-                <div className="absolute inset-0 bg-cover bg-center opacity-40 mix-blend-luminosity" 
-                     style={{backgroundImage: `url('${activeChar.img}')`}}>
-                </div>
-                <div className="absolute inset-0 bg-gradient-to-t from-[#f5f5f5] via-transparent to-transparent"></div>
+                <motion.div 
+                    initial={{ scale: 1.2, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 0.4 }}
+                    transition={{ duration: 1.5 }}
+                    className="absolute inset-0 bg-cover bg-center mix-blend-luminosity grayscale contrast-125" 
+                    style={{backgroundImage: `url('${activeChar.img}')`}}
+                />
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-zinc-900/50 to-zinc-900 lg:bg-gradient-to-l"></div>
             </div>
 
             {/* Content Container */}
-            <div className="relative z-10 w-full max-w-2xl">
+            <div className="relative z-10 w-full max-w-4xl px-2">
                 
                 {/* Visualizer / Gift Area */}
-                <div className="mb-12 flex justify-center">
+                <div className="mb-6 sm:mb-10 flex justify-center">
                     {isBirthday ? (
                          giftOpened ? (
                              <PhantomAudio characterName={character} name={name} />
@@ -432,17 +351,73 @@ const CountdownMission = () => {
                     )}
                 </div>
 
-                {/* Asymmetrical Countdown */}
+                {/* --- COUNTDOWN ALIGNMENT FIX --- */}
                 {!isBirthday && (
-                    <div className="flex flex-wrap justify-center gap-4 lg:gap-8 transform -rotate-3">
-                        <PersonaClock val={timeLeft.totalDays} label="DAYS" />
-                        <PersonaClock val={timeLeft.hours} label="HRS" />
-                        <div className="hidden sm:block w-px h-24 bg-yellow-300 transform rotate-12 mx-2"></div>
-                        <PersonaClock val={timeLeft.minutes} label="MIN" />
-                        <PersonaClock val={timeLeft.seconds} label="SEC" urgent={true} />
+                    <div className="w-full flex justify-center mt-4">
+                        {/* Logic:
+                            - Mobile (default): grid grid-cols-2 -> 2 kotak atas, 2 kotak bawah
+                            - Desktop (sm/lg): flex flex-row -> semua sejajar
+                        */}
+                        <div className="grid grid-cols-2 gap-3 sm:flex sm:flex-nowrap sm:items-center sm:justify-center sm:gap-6 lg:gap-8 transform -rotate-2">
+                            
+                            <PersonaClock val={timeLeft.totalDays} label="DAYS" />
+                            <PersonaClock val={timeLeft.hours} label="HRS" />
+                            
+                            {/* Divider only on larger screens */}
+                            <div className="hidden sm:block w-px h-16 sm:h-20 bg-yellow-400 transform rotate-12 mx-2"></div>
+                            
+                            <PersonaClock val={timeLeft.minutes} label="MIN" />
+                            <PersonaClock val={timeLeft.seconds} label="SEC" urgent={true} />
+                            
+                        </div>
                     </div>
                 )}
             </div>
+        </div>
+
+        {/* --- LEFT PANEL (TEXT/ACTION) - Show SECOND on Mobile --- */}
+        <div className="lg:col-span-5 lg:order-1 flex flex-col justify-center p-4 pb-20 sm:p-8 lg:p-12 relative z-20 space-y-6 sm:space-y-10">
+            
+            {/* CHARACTER DIALOGUE BOX */}
+            <div className="relative mt-4 sm:mt-0">
+                <div className="w-20 h-20 sm:w-32 sm:h-32 absolute -top-8 sm:-top-16 -left-2 sm:left-0 z-20 drop-shadow-lg transform -rotate-6">
+                     <img src={`/chibi/chibi_${character}.webp`} alt={character} className="w-full h-full object-contain filter grayscale contrast-125" />
+                </div>
+
+                <div className="bg-black border-2 sm:border-4 border-white p-4 pt-10 sm:pt-14 sm:pl-28 shadow-[5px_5px_0_rgba(0,0,0,0.5)] sm:shadow-[10px_10px_0_#000] transform -rotate-1 relative z-10">
+                    <div className="text-gray-400 font-mono text-[10px] sm:text-xs font-bold mb-1 uppercase tracking-widest border-b border-gray-600 pb-1">
+                        PHANTOM THIEF // {activeChar.name}
+                    </div>
+                    <p className="text-white font-['Bangers'] text-xl sm:text-3xl tracking-wide leading-tight">
+                        "{phaseData.dialog}"
+                    </p>
+                    <P5Star className="absolute right-2 bottom-2 w-6 h-6 text-yellow-400 animate-pulse" />
+                </div>
+            </div>
+
+            {/* TARGET INFO */}
+            <div>
+                <div className="inline-block bg-white text-black px-3 py-0.5 transform skew-x-[-10deg] border-2 border-black mb-2">
+                    <span className="font-mono font-black text-xs uppercase transform skew-x-[10deg]">Current Target</span>
+                </div>
+                <h1 className="font-['Bangers'] text-5xl xs:text-6xl sm:text-7xl lg:text-8xl text-white uppercase leading-[0.9] drop-shadow-[3px_3px_0_#000] transform -rotate-2 break-words">
+                    {name}
+                </h1>
+            </div>
+
+            {/* ACTION BUTTON */}
+            <button 
+                onClick={() => setShowShare(true)}
+                className="group relative w-full h-16 sm:h-20 bg-black border-2 sm:border-4 border-black overflow-hidden shadow-[4px_4px_0_#fff] active:translate-y-1 active:shadow-none transition-all"
+            >
+                <div className="absolute inset-0 bg-yellow-400 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out skew-y-12 origin-bottom-left"></div>
+                <div className="relative z-10 flex items-center justify-center h-full gap-3">
+                    <span className="font-['Bangers'] text-2xl sm:text-3xl text-white group-hover:text-black tracking-widest transition-colors">
+                        SEND CALLING CARD
+                    </span>
+                    <P5Star className="w-5 h-5 text-white group-hover:text-black group-hover:rotate-180 transition-all duration-500" />
+                </div>
+            </button>
         </div>
 
       </motion.div>
@@ -451,8 +426,8 @@ const CountdownMission = () => {
         {showShare && <CallingCardModal url={window.location.href} onClose={() => setShowShare(false)} />}
       </AnimatePresence>
 
-      <div className="relative z-50 bg-white text-black border-t-4 border-yellow-300">
-         <JaggedEdge className="text-yellow-300 -mt-3 absolute top-0 w-full" />
+      <div className="relative z-50 bg-black text-white border-t-2 sm:border-t-4 border-yellow-400 mt-auto">
+         <JaggedEdge className="text-yellow-400 -mt-2 sm:-mt-3 absolute top-0 w-full" />
          <Footer />
       </div>
     </div>
