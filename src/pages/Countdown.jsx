@@ -52,12 +52,10 @@ const CallingCardModal = ({ url, onClose }) => {
         <div className="bg-black p-1 shadow-[10px_10px_0_rgba(0,0,0,0.8)] sm:shadow-[20px_20px_0_rgba(0,0,0,0.8)] transform skew-x-[-3deg]">
           <div className="bg-black border-2 sm:border-4 border-white p-4 sm:p-6 flex flex-col items-center relative overflow-hidden">
             
-            {/* Background Texture */}
             <div className="absolute inset-0 opacity-20" 
                  style={{backgroundImage: 'radial-gradient(white 1px, transparent 1px)', backgroundSize: '10px 10px'}}>
             </div>
 
-            {/* Calling Card Header */}
             <div className="bg-yellow-400 text-black font-['Bangers'] text-xl sm:text-4xl px-3 py-1 -rotate-2 border-2 border-black absolute -top-3 sm:-top-4 -left-3 sm:-left-4 shadow-[3px_3px_0_#fff]">
               TAKE YOUR HEART
             </div>
@@ -86,7 +84,6 @@ const CallingCardModal = ({ url, onClose }) => {
           </div>
         </div>
         
-        {/* Close Button X */}
         <button onClick={onClose} className="absolute -top-10 -right-2 text-white font-['Bangers'] text-4xl drop-shadow-[4px_4px_0_#000] active:scale-90 transition-transform">
           X
         </button>
@@ -220,7 +217,7 @@ const PhantomAudio = ({ characterName, name }) => {
   );
 };
 
-// --- P5 CLOCK COMPONENT (RESPONSIVE) ---
+// --- P5 CLOCK COMPONENT ---
 const PersonaClock = ({ val, label, urgent }) => (
     <div className={`relative group transform ${urgent ? 'scale-105' : ''}`}>
         <div className={`
@@ -245,10 +242,14 @@ const PersonaClock = ({ val, label, urgent }) => (
 // --- MAIN PAGE ---
 const CountdownMission = () => {
   const { name, day, month, character } = useParams();
+  const navigate = useNavigate(); // ADD THIS
   const [showShare, setShowShare] = useState(false);
   const [timeLeft, setTimeLeft] = useState(null);
   const [isBirthday, setIsBirthday] = useState(false);
   const [giftOpened, setGiftOpened] = useState(false);
+  
+  // State Loading saat Back
+  const [isExiting, setIsExiting] = useState(false);
 
   // Character Data
   const CHARACTER_CONFIG = {
@@ -295,32 +296,56 @@ const CountdownMission = () => {
     return () => clearInterval(timer);
   }, [day, month]);
 
+  // --- HANDLE BACK BUTTON ---
+  // Fungsi ini dipanggil saat tombol Back diklik
+  const handleBack = (e) => {
+    if (e) e.preventDefault(); // Mencegah navigasi default
+    
+    setIsExiting(true); // Munculkan Loading Screen
+
+    setTimeout(() => {
+        // Navigasi ke Home dengan membawa state data form
+        // Ini kuncinya agar Home tau data apa yang harus ditampilkan
+        navigate('/', {
+            state: {
+                savedFormData: {
+                    name: name,
+                    day: day,
+                    month: month,
+                    character: character
+                }
+            }
+        });
+    }, 1500); // Delay 1.5 detik agar loading terlihat
+  };
+
   const phaseData = timeLeft ? getPhaseData(timeLeft.totalDays) : { dialog: "..." };
 
   if (!timeLeft) return <LoadingScreen text="INFILTRATING..." />;
 
-  // --- HANDLE BACK BUTTON ---
-  // Kita inject fungsi back ke button jika ingin ada efek loading, 
-  // tapi BackButton di halaman ini sudah default link to="/" yang oke.
-  // Jika ingin custom back, bisa gunakan onClick dan logic loading.
-
   return (
     <div className="flex flex-col min-h-[100dvh] bg-zinc-900 font-sans overflow-x-hidden selection:bg-yellow-400 selection:text-black">
       
+      {/* LOADING SCREEN SAAT KELUAR */}
+      <AnimatePresence>
+        {isExiting && <LoadingScreen text="LOADING..." />}
+      </AnimatePresence>
+
       {/* --- BACKGROUND GRAPHICS --- */}
       <div className="fixed inset-0 z-0 opacity-10 pointer-events-none">
          <div className="absolute inset-0" style={{backgroundImage: 'radial-gradient(#fff 1px, transparent 1px)', backgroundSize: '30px 30px'}}></div>
       </div>
 
-      <BackButton to="/" label="BACK" />
+      {/* BUTTON BACK DENGAN HANDLER KHUSUS */}
+      <BackButton onClick={handleBack} label="RETURN" />
 
-      {/* --- MAIN LAYOUT: Mobile Stacked, Desktop Grid --- */}
+      {/* --- MAIN LAYOUT --- */}
       <motion.div 
         className="flex-grow flex flex-col lg:grid lg:grid-cols-12 relative z-10"
         initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}
       >
         
-        {/* --- RIGHT PANEL (VISUALS) - Show FIRST on Mobile --- */}
+        {/* --- RIGHT PANEL (VISUALS) --- */}
         <div className="lg:col-span-7 lg:order-2 relative flex flex-col items-center justify-center min-h-[45vh] sm:min-h-[50vh] lg:min-h-screen p-4 pt-16 lg:p-8 overflow-hidden">
             
             {/* Character Background Splash */}
@@ -351,13 +376,9 @@ const CountdownMission = () => {
                     )}
                 </div>
 
-                {/* --- COUNTDOWN ALIGNMENT FIX --- */}
+                {/* --- COUNTDOWN ALIGNMENT --- */}
                 {!isBirthday && (
                     <div className="w-full flex justify-center mt-4">
-                        {/* Logic:
-                            - Mobile (default): grid grid-cols-2 -> 2 kotak atas, 2 kotak bawah
-                            - Desktop (sm/lg): flex flex-row -> semua sejajar
-                        */}
                         <div className="grid grid-cols-2 gap-3 sm:flex sm:flex-nowrap sm:items-center sm:justify-center sm:gap-6 lg:gap-8 transform -rotate-2">
                             
                             <PersonaClock val={timeLeft.totalDays} label="DAYS" />
@@ -375,7 +396,7 @@ const CountdownMission = () => {
             </div>
         </div>
 
-        {/* --- LEFT PANEL (TEXT/ACTION) - Show SECOND on Mobile --- */}
+        {/* --- LEFT PANEL (TEXT/ACTION) --- */}
         <div className="lg:col-span-5 lg:order-1 flex flex-col justify-center p-4 pb-20 sm:p-8 lg:p-12 relative z-20 space-y-6 sm:space-y-10">
             
             {/* CHARACTER DIALOGUE BOX */}

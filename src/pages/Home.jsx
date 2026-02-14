@@ -286,7 +286,7 @@ const Home = () => {
       <div className="w-full max-w-xl mx-auto relative px-5 py-8 lg:py-0 min-h-[500px] flex flex-col justify-center">
         {/* Background Decor */}
         <div className="absolute -top-6 -right-2 -z-10 opacity-10 select-none pointer-events-none">
-           <span className="font-['Bangers'] text-[120px] leading-none text-white">01</span>
+           <span className="font-['Bangers'] text-[120px] leading-none text-white">02</span>
         </div>
 
         {/* --- KONTEN BERUBAH: BRIEFING ATAU FORM --- */}
@@ -371,7 +371,7 @@ const Home = () => {
                         >
                           {char.img ? (
                             <div 
-                              className={`w-full h-20 bg-cover bg-top mb-2 transition-all border border-black ${formData.character === char.id ? 'grayscale-0' : 'grayscale group-hover:grayscale-0'}`}
+                              className={`w-full h-20 bg-cover bg-center mb-2 transition-all border border-black ${formData.character === char.id ? 'grayscale-0' : 'grayscale group-hover:grayscale-0'}`}
                               style={{ backgroundImage: `url('${char.img}')` }}
                             />
                           ) : (
